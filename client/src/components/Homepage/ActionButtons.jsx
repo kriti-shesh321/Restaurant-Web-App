@@ -20,7 +20,7 @@ const ActionButtons = () => {
           </p>
           <Link
             to="/menu"
-            className="bg-[#7ee13c] text-black h-fit font-bold px-6 py-3 rounded hover:scale-105 transition-transform mt-5"
+            className="bg-[#7ee13c] text-black h-fit font-bold px-6 py-3 hover:scale-105 transition-transform mt-5"
           >
             Explore Our Menu
           </Link>

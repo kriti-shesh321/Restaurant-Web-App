@@ -9,7 +9,7 @@ const ExploreFood = () => {
           <h1 className="md:basis-1/2 text-lg md:text-3xl lg:text-5xl font-bold text-black">Experience a diverse range of flavourful dishes</h1>
           <Link
             to="/menu"
-            className="bg-black text-white px-2 md:px-3 py-1 md:py-2 border"
+            className="bg-black text-white px-2 md:px-3 py-1 md:py-2 border hover:scale-110 transition-transform hover:bg-cream hover:text-black hover:border hover:border-black"
           >
             Checkout Full Menu
           </Link>
@@ -18,7 +18,7 @@ const ExploreFood = () => {
 
           <div className="flex flex-col w-72 gap-2">
             <div className="relative bg-cream group">
-              <button className="absolute bottom-5 left-20 bg-black text-white px-4 py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+              <button className="absolute bottom-5 left-20 bg-black text-white px-4 py-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
                 Add To Cart
               </button>
               <img

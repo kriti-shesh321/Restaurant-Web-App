@@ -2,7 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-/* @layer components {
-    @apply {
+@layer components {
+    .active {
+        @apply bg-white text-[#63b3ed]
     }
-} */
+}

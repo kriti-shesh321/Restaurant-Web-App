@@ -2,7 +2,7 @@ import { FaFacebookF, FaXTwitter, FaInstagram } from "react-icons/fa6";
 const Contact = () => {
   return (
     <>
-      <div className="border-t font-text1 space-y-10 px-8 md:px-24 lg:px-40 py-20">
+      <div className="border-t font-text1 space-y-10 px-8 md:px-24 lg:px-40 py-10 md:py-20">
         <h1 className="text-4xl font-bold">We look forward to serving you.</h1>
 
         <div className="flex flex-wrap justify-between gap-y-5 h-fit">
@@ -12,11 +12,11 @@ const Contact = () => {
               width="100%"
               height="100%"
               loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
+              referrerPolicy="no-referrer-when-downgrade"
             />
           </div>
 
-          <div className="flex flex-col w-full lg:w-2/5 lg:h-[420px] justify-between ">
+          <div className="flex flex-col w-full lg:w-2/5 lg:h-[420px] justify-between">
             <div className="flex justify-between border-b-2 border-maroon py-5">
               <h2 className="text-lg font-semibold">Opening Timings</h2>
               <div className="text-right">

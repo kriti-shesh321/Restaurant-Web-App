@@ -15,7 +15,7 @@ export default {
       colors: {
         maroon: '#9d1d1f',
         cream: '#FBF2E5',
-      }
+      },
     },
   },
   plugins: [require("daisyui")],

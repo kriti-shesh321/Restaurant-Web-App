@@ -1,12 +1,13 @@
 import {
   BrowserRouter as Router, Routes, Route
 } from 'react-router-dom';
-import Footer from "./componenets/Footer";
-import Navbar from "./componenets/Navbar";
+import Footer from "./components/Footer";
+import Navbar from "./components/Navbar";
 import HomePage from "./pages/HomePage";
 import SignupPage from "./pages/SignupPage";
 import MenuPage from "./pages/MenuPage";
 import CheckoutPage from "./pages/CheckoutPage";
+import UserProfilePage from "./pages/UserProfilePage";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/menu" element={<MenuPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/my-profile" element={<UserProfilePage />} />
           </Routes>
         </div>
         <Footer />

@@ -128,7 +128,7 @@ const Navbar = () => {
                         <NavLink
                             to="/menu"
                             onClick={() => handleSetActive("")}
-                            className="hidden lg:inline border-4 border-maroon bg-maroon hover:bg-red-600 hover:shadow-lg text-white font-semibold md:px-4 px-2 py-1"
+                            className="hidden lg:inline border-4 border-maroon bg-maroon hover:bg-red-600 hover:shadow-lg hover:scale-110 text-white font-bold md:px-4 px-2 py-1"
                         >
                             ORDER ONLINE
                         </NavLink>

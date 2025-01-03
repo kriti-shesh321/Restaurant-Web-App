@@ -1,10 +1,10 @@
-import AboutUs from "../componenets/Homepage/AboutUs";
-import ExploreFood from "../componenets/Homepage/ExploreFood";
-import Hero from "../componenets/Homepage/Hero";
-import Reviews from "../componenets/Homepage/Reviews";
-import ActionButtons from "../componenets/Homepage/ActionButtons";
-import Contact from "../componenets/Homepage/Contact";
-import DiverseMenu from "../componenets/Homepage/DiverseMenu";
+import AboutUs from "../components/Homepage/AboutUs";
+import ExploreFood from "../components/Homepage/ExploreFood";
+import Hero from "../components/Homepage/Hero";
+import Reviews from "../components/Homepage/Reviews";
+import ActionButtons from "../components/Homepage/ActionButtons";
+import Contact from "../components/Homepage/Contact";
+import DiverseMenu from "../components/Homepage/DiverseMenu";
 
 const HomePage = () => {
     return (

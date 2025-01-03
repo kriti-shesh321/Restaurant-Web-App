@@ -27,7 +27,7 @@ const AboutUs = () => {
 
           <Link
             to="/menu"
-            className="bg-green-500 flex items-center w-fit text-black font-bold transition-transform transform hover:scale-105 hover:bg-green-300 px-5 py-2 lg:p-2 mt-10 lg:mt-5"
+            className="bg-green-500 flex items-center w-fit text-black font-bold transition-transform transform hover:scale-110 hover:bg-green-300 px-5 py-2 lg:p-2 mt-10 lg:mt-5"
           >
             CHECKOUT FULL MENU
             <FaAngleRight className="hidden lg:inline lg:text-2xl" />

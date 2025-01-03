@@ -33,7 +33,6 @@ const Hero = () => {
           />
         </div>
 
-
         <div id="slide2" className={`carousel-item absolute w-full h-full ${currentSlide === 2 ? "opacity-100" : "opacity-0"}`}>
           <img
             src={slide2}
@@ -41,7 +40,6 @@ const Hero = () => {
             alt="Slide 2"
           />
         </div>
-
 
         <div id="slide3" className={`carousel-item absolute w-full h-full ${currentSlide === 3 ? "opacity-100" : "opacity-0"}`}>
           <img
@@ -76,17 +74,17 @@ const Hero = () => {
         <p className="text-md md:text-xl text-gray-100 font-extrabold mb-10 rounded px-3 py-1 shadow">
           Experience the taste of authentic Asian cuisine.
         </p>
-        <div className="flex flex-col md:flex-row gap-4 md:text-xl font-bold min-w-48">
+        <div className="flex flex-col md:flex-row gap-7 md:text-xl font-bold min-w-48">
           <Link
             to="/menu"
-            className="flex justify-center items-center gap-3 bg-maroon hover:bg-red-600 text-white md:w-56 py-2"
+            className="flex justify-center items-center gap-3 bg-maroon hover:bg-red-600 hover:scale-110 text-white md:w-56 py-2"
           >
             <span>Order Online</span>
             <span><FaBasketShopping /></span>
           </Link>
           <Link
             to="/signup"
-            className="bg-gray-200 border-maroon border-2 text-maroon hover:bg-white hover:text-maroon md:w-56 py-2"
+            className="bg-gray-200 border-maroon border-2 text-maroon hover:bg-white hover:text-maroon hover:scale-110 md:w-56 py-2"
           >
             Create Account
           </Link>
@@ -95,4 +93,5 @@ const Hero = () => {
     </div>
   );
 };
+
 export default Hero;

@@ -16,19 +16,19 @@ const Reviews = () => {
   };
 
   const isActiveButton = (slide) =>
-    activeSlide === slide ? "text-gray-200 text-xs md:text-md" : "text-gray-800 text-xs md:text-md";
+    activeSlide === slide ? "text-cream text-xs md:text-md" : "text-gray-500 text-xs md:text-md";
 
   return (
-    <div className="bg-red-900 text-white font-text1 py-20 text-center space-y-10">
+    <div className="bg-red-950 text-white font-text1 py-20 text-center space-y-10">
       <h2 className="text-4xl font-bold text-center">What Our Customers Say</h2>
-      <div className="carousel w-full max-w-lg mx-auto px-2 md:px-0">
+      <div className="bg-cream text-black carousel w-[90%] md:w-[80%] lg:w-1/2 border rounded-lg py-5">
         
         <div
-          className={`carousel-item w-full flex flex-col items-center text-center space-y-8 ${
+          className={`carousel-item w-full flex flex-col items-center text-center lg:space-y-8 ${
             activeSlide === 1 ? "block" : "hidden"
           }`}
         >
-          <p className="text-lg italic">
+          <p className="text-xl italic mb-5">
             "The food here is absolutely amazing! I can't wait to come back."
           </p>
           <img
@@ -40,11 +40,11 @@ const Reviews = () => {
         </div>
 
         <div
-          className={`carousel-item w-full flex flex-col items-center text-center space-y-8 ${
+          className={`carousel-item w-full flex flex-col items-center text-center lg:space-y-8 ${
             activeSlide === 2 ? "block" : "hidden"
           }`}
         >
-          <p className="text-lg italic">
+          <p className="text-xl italic mb-5">
             "Exceptional service and delicious dishes. Highly recommend!"
           </p>
           <img
@@ -56,11 +56,11 @@ const Reviews = () => {
         </div>
 
         <div
-          className={`carousel-item w-full flex flex-col items-center text-center space-y-8 ${
+          className={`carousel-item w-full flex flex-col items-center text-center lg:space-y-8 ${
             activeSlide === 3 ? "block" : "hidden"
           }`}
         >
-          <p className="text-lg italic">
+          <p className="text-xl italic mb-5">
             "A wonderful dining experience. The flavors are out of this world."
           </p>
           <img
