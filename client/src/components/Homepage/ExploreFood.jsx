@@ -36,7 +36,7 @@ const ExploreFood = () => {
 
         <div className="flex flex-wrap gap-y-5 lg:gap-y-10 justify-evenly md:justify-between text-center md:text-left">
 
-          {menuData && menuData.map((dish) => (
+          {menuData ? menuData.map((dish) => (
             <div key={dish.id} className="flex flex-col w-72 gap-2">
               <div className="relative bg-cream group">
                 <button onClick={() => addToCart(dish.id, 1)} className="absolute bottom-5 left-20 bg-black text-white px-4 py-2 opacity-0 group-hover:opacity-100 transition-opacity z-10 hover:border-2 hover:border-maroon">
@@ -52,8 +52,9 @@ const ExploreFood = () => {
               <p className="text-gray-700">{dish.description}</p>
               <p className="font-bold md:font-medium">₹ {dish.price}</p>
             </div>
-          ))
-          }
+          )) : (
+            <></>
+          )}
 
         </div>
       </div>

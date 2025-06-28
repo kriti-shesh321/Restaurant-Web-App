@@ -133,7 +133,7 @@ const OnlineMenu = ({ data, categories }) => {
         ) : (
 
           <div className="w-full h-full flex items-center justify-center pt-20">
-            <p className="text-gray-500 text-xl">No dishes found</p>
+            <p className="text-gray-500 text-xl">No dishes found.</p>
           </div>
 
         )}

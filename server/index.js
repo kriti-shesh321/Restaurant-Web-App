@@ -12,7 +12,7 @@ import cartRoutes from "./routes/cartRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import restaurantSettingsRoutes from "./routes/restaurantSettingsRoutes.js";
 
-dotenv.config({path: './.env.prod'});
+dotenv.config();
 
 const PORT = process.env.PORT;
 

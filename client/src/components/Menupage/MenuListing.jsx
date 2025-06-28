@@ -1,4 +1,12 @@
-const MenuListing = ({data, categories}) => {
+const MenuListing = ({ data }) => {
+
+  if (!data || data.length === 0) {
+    return (
+      <div className="w-full h-full flex items-center justify-center pt-20 font-text1">
+        <p className="text-gray-500 text-2xl">Menu not found.</p>
+      </div>
+    );
+  }
 
   const groupedMenu = data.reduce((acc, item) => {
     if (!acc[item.category.name]) {
@@ -7,6 +15,8 @@ const MenuListing = ({data, categories}) => {
     acc[item.category.name].push(item);
     return acc;
   }, {});
+
+  
 
   return (
     <div className="min-h-screen bg-red-950 font-title text-cream px-10 md:px-20 py-10 mt-10">

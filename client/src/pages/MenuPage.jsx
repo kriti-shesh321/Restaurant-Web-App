@@ -58,7 +58,7 @@ const MenuPage = () => {
         {
           showOnlineMenu
             ? <OnlineMenu data={menuData} categories={menuCategories}/>
-            : <MenuListing data={menuData} categories={menuCategories}/>
+            : <MenuListing data={menuData}/>
         }
       </div>
     </>

@@ -10,7 +10,7 @@ export const getDeliveryAddresses = async (req, res, next) => {
             order: [['createdAt', 'ASC']]
         });
 
-        if (!addresses || addresses.length === 0) return res.status(404).json({ message: "No delivery addresses found." });
+        if (!addresses || addresses.length === 0) return res.status(200).json({ message: "No delivery addresses found.", addresses: [] });
 
         return res.status(200).json(addresses);
     } catch (error) {
