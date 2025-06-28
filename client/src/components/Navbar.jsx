@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { NavLink } from 'react-router-dom';
 import { FaBars, FaWindowClose } from 'react-icons/fa';
+import AuthContext from "../context/Auth/AuthContext";
 import image from '/image.png';
 
 const Navbar = () => {
+    const { user } = useContext(AuthContext);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isNavbarOpen, setIsNavbarOpen] = useState(false);
 
@@ -12,11 +14,6 @@ const Navbar = () => {
     const handleSetActive = () => {
         setIsNavbarOpen(false);
     };
-
-    const linkClass = (link) =>
-        link === activeLink
-            ? "font-bold hover:shadow-lg text-maroon px-2 py-1 underline"
-            : "font-bold hover:bg-red-300 hover:shadow-lg px-2 py-1";
 
     return (
         <>
@@ -117,13 +114,25 @@ const Navbar = () => {
                             </div>
                         </div>
 
-                        <NavLink
-                            to="/signup"
-                            onClick={() => handleSetActive()}
-                            className={activeLinkClass}
-                        >
-                            SIGNUP/LOGIN
-                        </NavLink>
+                        {!user &&
+                            <NavLink
+                                to="/signup"
+                                onClick={() => handleSetActive()}
+                                className={activeLinkClass}
+                            >
+                                SIGNUP/LOGIN
+                            </NavLink>
+                        }
+
+                        {user &&
+                            <NavLink
+                                to="/my-profile"
+                                onClick={() => handleSetActive()}
+                                className={activeLinkClass}
+                            >
+                                PROFILE
+                            </NavLink>
+                        }
 
                         <NavLink
                             to="/menu"

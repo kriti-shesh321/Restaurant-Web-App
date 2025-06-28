@@ -1,9 +1,11 @@
-import { useState } from "react";
-import { FcGoogle } from "react-icons/fc";
-import { FaApple, FaEyeSlash, FaEye } from "react-icons/fa";
+import { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { FaEyeSlash, FaEye } from "react-icons/fa";
 import img from "../assets/signup/image.png";
+import AuthContext from "../context/Auth/AuthContext";
 
 const SignupPage = () => {
+  const { signUp, login } = useContext(AuthContext);
   const [showPassword, setShowPassword] = useState(false);
   const [signup, setSignup] = useState(true);
   const [formData, setFormData] = useState({
@@ -11,6 +13,8 @@ const SignupPage = () => {
     email: "",
     password: "",
   });
+
+  const navigate = useNavigate();
 
   const handleSignupChange = () => {
     setSignup(prevState => !prevState);
@@ -21,11 +25,23 @@ const SignupPage = () => {
   };
 
   const handleEmailSignup = async (e) => {
-    pass;
+    e.preventDefault();
+    try {
+      await signUp(formData);
+      return navigate("/");
+    } catch (error) {
+      console.error("Signup failed:", error);
+    }
   };
 
   const handleEmailLogin = async (e) => {
-    pass;
+    e.preventDefault();
+    try {
+      await login(formData);
+      return navigate("/");
+    } catch (error) {
+      console.error("Login failed:", error);
+    }
   };
 
   return (
@@ -35,19 +51,6 @@ const SignupPage = () => {
         <h1 className='text-xl md:text-4xl mb-5 font-bold text-center lg:text-left'>{signup ? 'Signup' : 'Signin'}</h1>
 
         <div className='w-fit space-y-2 md:space-y-3 mx-auto'>
-
-          <div className='text-xs md:text-lg font-medium flex flex-col gap-5'>
-            <button className='border p-2 rounded hover:bg-gray-200'>
-              <FcGoogle className='h-3 md:h-5 inline mb-1' />
-              <span className='ml-1'>Continue with Google</span>
-            </button>
-            <button className='border p-2 rounded hover:bg-gray-200'>
-              <FaApple className='h-3 md:h-5 inline mb-1' />
-              <span className='ml-1'>Continue with Apple</span>
-            </button>
-          </div>
-
-          <hr />
 
           <form onSubmit={signup ? handleEmailSignup : handleEmailLogin}>
             <div className='flex flex-col gap-3 text-xs md:text-lg'>
@@ -82,7 +85,7 @@ const SignupPage = () => {
 
       </div>
 
-      <img src={img} alt="A bowl with a dish." className="h-[500px]"/>
+      <img src={img} alt="A bowl with a dish." className="h-[500px]" />
 
     </section>
   );

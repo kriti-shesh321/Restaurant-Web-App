@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { FaCircle } from "react-icons/fa6";
 
-const Reviews = () => {
+const Reviews = ({ data }) => {
   const [activeSlide, setActiveSlide] = useState(1);
 
   useEffect(() => {
@@ -22,54 +22,29 @@ const Reviews = () => {
     <div className="bg-red-950 text-white font-text1 py-20 text-center space-y-10">
       <h2 className="text-4xl font-bold text-center">What Our Customers Say</h2>
       <div className="bg-cream text-black carousel w-[90%] md:w-[80%] lg:w-1/2 border rounded-lg py-5">
-        
-        <div
-          className={`carousel-item w-full flex flex-col items-center text-center lg:space-y-8 ${
-            activeSlide === 1 ? "block" : "hidden"
-          }`}
-        >
-          <p className="text-xl italic mb-5">
-            "The food here is absolutely amazing! I can't wait to come back."
-          </p>
-          <img
-            src="https://media.istockphoto.com/id/1332100919/vector/man-icon-black-icon-person-symbol.jpg?s=612x612&w=0&k=20&c=AVVJkvxQQCuBhawHrUhDRTCeNQ3Jgt0K1tXjJsFy1eg="
-            alt="Customer 1"
-            className="size-16 md:size-20 rounded-full"
-          />
-          <h3 className="text-xl font-medium">John Doe</h3>
-        </div>
 
-        <div
-          className={`carousel-item w-full flex flex-col items-center text-center lg:space-y-8 ${
-            activeSlide === 2 ? "block" : "hidden"
-          }`}
-        >
-          <p className="text-xl italic mb-5">
-            "Exceptional service and delicious dishes. Highly recommend!"
-          </p>
-          <img
-            src="https://media.istockphoto.com/id/1332100919/vector/man-icon-black-icon-person-symbol.jpg?s=612x612&w=0&k=20&c=AVVJkvxQQCuBhawHrUhDRTCeNQ3Jgt0K1tXjJsFy1eg="
-            alt="Customer 2"
-            className="size-16 md:size-20 rounded-full"
-          />
-          <h3 className="text-xl font-medium">Jane Smith</h3>
-        </div>
-
-        <div
-          className={`carousel-item w-full flex flex-col items-center text-center lg:space-y-8 ${
-            activeSlide === 3 ? "block" : "hidden"
-          }`}
-        >
-          <p className="text-xl italic mb-5">
-            "A wonderful dining experience. The flavors are out of this world."
-          </p>
-          <img
-            src="https://media.istockphoto.com/id/1332100919/vector/man-icon-black-icon-person-symbol.jpg?s=612x612&w=0&k=20&c=AVVJkvxQQCuBhawHrUhDRTCeNQ3Jgt0K1tXjJsFy1eg="
-            alt="Customer 3"
-            className="size-16 md:size-20 rounded-full"
-          />
-          <h3 className="text-xl font-medium">Emily Brown</h3>
-        </div>
+        {data && data.length > 0 && data.map((review, index) => (
+          <div
+            key={review.id}
+            className={`carousel-item w-full flex flex-col items-center text-center lg:space-y-8 ${activeSlide === index + 1 ? "block" : "hidden"
+              }`}
+          >
+            <p className="text-xl italic">
+              {review.comment || "-"}
+            </p>
+            <p className="text-2xl italic mb-5">
+              {"★".repeat(review.rating)}
+            </p>
+            <img
+              src={review.user?.profileImage || "https://media.istockphoto.com/id/1332100919/vector/man-icon-black-icon-person-symbol.jpg?s=612x612&w=0&k=20&c=AVVJkvxQQCuBhawHrUhDRTCeNQ3Jgt0K1tXjJsFy1eg="}
+              alt={review.user.name || "Customer"}
+              loading="lazy"
+              className="size-16 md:size-20 rounded-full"
+            />
+            <h3 className="text-xl font-medium">{review.user.name}</h3>
+          </div>
+        )
+        )}
 
       </div>
 

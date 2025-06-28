@@ -5,7 +5,7 @@ import slide1 from '../../assets/heroSlides/slide1.jpg';
 import slide2 from '../../assets/heroSlides/slide2.jpg';
 import slide3 from '../../assets/heroSlides/slide3.jpg';
 
-const Hero = () => {
+const Hero = ({ user }) => {
   const [currentSlide, setCurrentSlide] = useState(1);
 
   useEffect(() => {
@@ -82,12 +82,14 @@ const Hero = () => {
             <span>Order Online</span>
             <span><FaBasketShopping /></span>
           </Link>
-          <Link
-            to="/signup"
-            className="bg-gray-200 border-maroon border-2 text-maroon hover:bg-white hover:text-maroon hover:scale-110 md:w-56 py-2"
-          >
-            Create Account
-          </Link>
+          {!user &&
+            <Link
+              to="/signup"
+              className="bg-gray-200 border-maroon border-2 text-maroon hover:bg-white hover:text-maroon hover:scale-110 md:w-56 py-2"
+            >
+              Create Account
+            </Link>
+          }
         </div>
       </div>
     </div>
