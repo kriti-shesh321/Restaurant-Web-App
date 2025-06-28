@@ -7,7 +7,7 @@ import { fileURLToPath } from "url";
 import User from "../models/User.js";
 import { formatImageUrl } from "../utils/imageUrlFormatter.js";
 
-dotenv.config();
+dotenv.config({path: './.env.prod'});
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
