@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
+import cors from 'cors';
 import sequelize from "./config/database.js";
 import userRoutes from "./routes/userRoutes.js";
 import deliveryAddressRoutes from "./routes/deliveryAddressRoutes.js";
@@ -21,6 +22,7 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
