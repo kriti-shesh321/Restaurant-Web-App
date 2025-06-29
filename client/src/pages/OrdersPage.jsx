@@ -1,10 +1,12 @@
 import { useEffect, useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import OrderContext from "../context/Order/OrderContext";
+import Spinner from "../components/Spinner";
 
 const OrdersPage = () => {
   const { getOrderByUserId } = useContext(OrderContext);
   const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -13,10 +15,14 @@ const OrdersPage = () => {
         orderList && setOrders(orderList);
       } catch (error) {
         console.error("Error fetching orders:", error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchOrders();
   }, []);
+
+  if (loading) return <Spinner />;
 
   return (
     <div className="max-w-[80%] pt-20 mx-auto">

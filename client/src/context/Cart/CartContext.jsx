@@ -30,8 +30,8 @@ const CartProvider = ({ children }) => {
         try {
             if (isLoggedIn) {
                 await axiosInstance.post("/cart", { menuItemId, quantity: qty });
-                const { cartItems, quantity } = await getCart();
-                setCart({ cartItems, quantity });
+                const { cartItems, total } = await getCart();
+                setCart({ cartItems, total });
             } else {
                 const { data: menuItem } = await axiosInstance.get(`/menu/${menuItemId}`);
 

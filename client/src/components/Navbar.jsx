@@ -114,23 +114,21 @@ const Navbar = () => {
                             </div>
                         </div>
 
-                        {!user &&
-                            <NavLink
-                                to="/signup"
-                                onClick={() => handleSetActive()}
-                                className={activeLinkClass}
-                            >
-                                SIGNUP/LOGIN
-                            </NavLink>
-                        }
-
-                        {user &&
+                        {user ?
                             <NavLink
                                 to="/my-profile"
                                 onClick={() => handleSetActive()}
                                 className={activeLinkClass}
                             >
                                 PROFILE
+                            </NavLink>
+                            :
+                            <NavLink
+                                to="/signup"
+                                onClick={() => handleSetActive()}
+                                className={activeLinkClass}
+                            >
+                                SIGNUP/LOGIN
                             </NavLink>
                         }
 

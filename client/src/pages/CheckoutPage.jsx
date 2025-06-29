@@ -24,6 +24,8 @@ const CheckoutPage = () => {
     type: "Home",
   });
 
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -46,28 +48,32 @@ const CheckoutPage = () => {
 
   const handleOrder = async () => {
     try {
+      setLoading(true);
+      let addressId;
       if (user) {
-        const res = await createOrder({
-          deliveryAddressId: selectedAddress
-        });
+        if (selectedAddress) {
+          addressId = selectedAddress;
+        }
+        else {
+          const newAddress = await addDeliveryAddress({ ...formData, userId: user.id });
+          addressId = newAddress.id;
+        }
+
+        await createOrder({ deliveryAddressId: addressId });
       }
       else {
-        const addressData = {
-          ...formData,
-          userId: null,
-        };
-        const address = await addDeliveryAddress(addressData);
-        if (address) {
-          const res = await createOrder({
-            deliveryAddressId: address.id,
-            items: cart?.cartItems,
-            totalAmount: cart?.total,
-          });
-        }
+        const guestAddress = await addDeliveryAddress({ ...formData, userId: null });
+        addressId = guestAddress?.id;
+
+        await createOrder({
+          deliveryAddressId: addressId,
+          items: cart?.cartItems,
+          totalAmount: cart?.total,
+        });
       }
 
       clearCart();
-
+      setLoading(false);
       navigate("/order-success", { state: { isLoggedIn: !!user } });
 
     } catch (error) {
@@ -82,7 +88,7 @@ const CheckoutPage = () => {
         <div>
           <h3 className="text-lg font-bold mb-5 bg-white">Delivery Address {!user && <span className="text-red-500 text-sm">* (mandatory)</span>}</h3>
           <div>
-            {user
+            {user && addresses.length > 0
               ? (
                 <select name="type" className="border w-full p-2 bg-white">
                   {addresses.map((address) => (
@@ -93,7 +99,7 @@ const CheckoutPage = () => {
                 </select>
               ) : (
                 <div className="space-y-3">
-                  <input name="guestName" placeholder="Name" className="border w-full p-2 bg-white" onChange={handleChange} />
+                  {!user && <input name="guestName" placeholder="Name" className="border w-full p-2 bg-white" onChange={handleChange} />}
                   <input name="address" placeholder="Address" className="border w-full p-2 bg-white" onChange={handleChange} />
                   <input name="city" placeholder="City" className="border w-full p-2 bg-white" onChange={handleChange} />
                   <input name="state" placeholder="State" className="border w-full p-2 bg-white" onChange={handleChange} />
@@ -123,14 +129,14 @@ const CheckoutPage = () => {
                 ))}
               </ul>
             </div>
-            <p className="flex justify-between font-semibold mt-2 text-lg"><span>Total</span> ₹{Number(cart?.total).toFixed(2)}</p>
+            <p className="flex justify-between font-semibold mt-2 text-lg"><span>Total</span> ₹ {Number(cart?.total).toFixed(2)}</p>
           </div>
 
           <button
             onClick={handleOrder}
             className="bg-green-600 hover:bg-green-700 text-lg text-white font-bold py-2 px-4 w-full rounded"
           >
-            Place Order (Cash on Delivery)
+            {loading ? "Placing Order..." : "Place Order (Cash on Delivery)"}
           </button>
         </div>
 

@@ -13,7 +13,6 @@ const OrderDetails = () => {
             try {
                 const orderData = await getOrderById(id);
                 setOrder(orderData);
-                console.log("Fetched order:", orderData);
             } catch (error) {
                 console.error("Error fetching order:", error);
             }

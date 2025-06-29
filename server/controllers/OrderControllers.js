@@ -137,7 +137,7 @@ export const getOrdersByUserId = async (req, res) => {
         });
 
         if (!orders.length) {
-            return res.status(404).json({ message: "No orders found for this user" });
+            return res.status(200).json({ message: "No orders found for this user", orders: [] });
         }
 
         res.status(200).json(orders);

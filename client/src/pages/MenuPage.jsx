@@ -3,15 +3,18 @@ import MenuContext from "../context/Menu/MenuContext.jsx";
 import MenuListing from "../components/Menupage/MenuListing";
 import OnlineMenu from "../components/Menupage/OnlineMenu";
 import MenuCategoryContext from "../context/Menu/MenuCategoryContext.jsx";
+import Spinner from "../components/Spinner.jsx";
 
 const MenuPage = () => {
-  const {onlineMenu, offlineMenu} = useContext(MenuContext);
-  const {getMenuCategories} = useContext(MenuCategoryContext);
+  const { onlineMenu, offlineMenu } = useContext(MenuContext);
+  const { getMenuCategories } = useContext(MenuCategoryContext);
+
+  const [loading, setLoading] = useState(true);
 
   const [showOnlineMenu, setShowOnlineMenu] = useState(true);
   const [menuCategories, setMenuCategories] = useState([]);
   const [menuData, setMenuData] = useState(null);
-  
+
   useEffect(() => {
     const fetchMenu = async () => {
       try {
@@ -19,8 +22,10 @@ const MenuPage = () => {
         setMenuData(data);
       } catch (error) {
         console.error("Error fetching menu data:", error);
+      } finally {
+        setLoading(false);
       }
-    }; 
+    };
     fetchMenu();
   }, [showOnlineMenu]);
 
@@ -55,10 +60,11 @@ const MenuPage = () => {
       </div>
 
       <div className="px-5 lg:px-48 pb-20">
-        {
+        {loading ? <Spinner /> : (
           showOnlineMenu
-            ? <OnlineMenu data={menuData} categories={menuCategories}/>
-            : <MenuListing data={menuData}/>
+            ? <OnlineMenu data={menuData} categories={menuCategories} />
+            : <MenuListing data={menuData} />
+        )
         }
       </div>
     </>

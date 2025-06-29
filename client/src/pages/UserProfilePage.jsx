@@ -6,11 +6,13 @@ import { formatReadableDate } from "../utils/formatDate";
 import DeliveryAddressContext from "../context/Auth/DeliveryAddressContext.jsx";
 import ProfileEditForm from "../components/Profile/ProfileEditForm.jsx";
 import AddressForm from "../components/Profile/AddressForm.jsx";
+import Spinner from "../components/Spinner.jsx";
 
 const UserProfilePage = () => {
   const { getUser, updateUser, deleteUser, logout } = useContext(AuthContext);
   const { getDeliveryAddresses, addDeliveryAddress, editDeliveryAddress, deleteDeliveryAddress } = useContext(DeliveryAddressContext);
 
+  const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState("");
   const [addresses, setAddresses] = useState([]);
   const [editingAddress, setEditingAddress] = useState(null);
@@ -31,6 +33,8 @@ const UserProfilePage = () => {
         setAddresses(addressList);
       } catch (error) {
         console.error("Error fetching user data:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -104,12 +108,14 @@ const UserProfilePage = () => {
     }
   };
 
+  if (loading) return <Spinner />;
+
   return (
     userData &&
     <section>
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] font-text1 md:mx-auto lg:mx-40 lg:my-10 lg:min-h-[500px] md:w-[600px] lg:w-auto shadow-lg border">
 
-        <div className="bg-red-900 text-white flex flex-col justify-between items-center py-10 lg:py-40">
+        <div className="bg-red-900 text-white flex flex-col justify-between items-center gap-y-3 py-10 lg:py-40">
           <img
             src={userData.profileImage ? userData.profileImage : "https://media.istockphoto.com/id/1332100919/vector/man-icon-black-icon-person-symbol.jpg?s=612x612&w=0&k=20&c=AVVJkvxQQCuBhawHrUhDRTCeNQ3Jgt0K1tXjJsFy1eg="}
             alt="user image"
@@ -124,10 +130,10 @@ const UserProfilePage = () => {
             >
               Edit Profile <FaEdit />
             </button>
-            <button 
-            type="button" 
-            onClick={handleLogout} 
-            className="flex gap-3 items-center border px-3 py-1 bg-white text-black font-medium hover:shadow hover:bg-red-950 hover:text-white"
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="flex gap-3 items-center border px-3 py-1 bg-white text-black font-medium hover:shadow hover:bg-red-950 hover:text-white"
             >
               <span>Logout</span> <FaSignOutAlt />
             </button >
