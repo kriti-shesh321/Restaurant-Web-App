@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { FaEyeSlash, FaEye } from "react-icons/fa";
 import img from "../assets/signup/image.png";
 import AuthContext from "../context/Auth/AuthContext";
+import { toast } from "react-toastify";
 
 const SignupPage = () => {
   const { signUp, login } = useContext(AuthContext);
@@ -13,6 +14,7 @@ const SignupPage = () => {
     email: "",
     password: "",
   });
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -27,20 +29,30 @@ const SignupPage = () => {
   const handleEmailSignup = async (e) => {
     e.preventDefault();
     try {
+      setLoading(true);
       await signUp(formData);
+      toast.success("Sign up success!");
       return navigate("/");
     } catch (error) {
+      toast.error("Error Signing Up!");
       console.error("Signup failed:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleEmailLogin = async (e) => {
     e.preventDefault();
     try {
+      setLoading(true);
       await login(formData);
+      toast.success("Login success!");
       return navigate("/");
     } catch (error) {
+      toast.error("Error Logging In!");
       console.error("Login failed:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -69,7 +81,7 @@ const SignupPage = () => {
                 type="submit"
                 className="p-2 rounded hover:bg-green-700 bg-green-500 text-white font-bold"
               >
-                {signup ? 'Sign up with Email' : 'Login'}
+                {loading ? 'Please wait...' : signup ? 'Sign up with Email' : 'Login'}
               </button>
             </div>
           </form>
@@ -85,7 +97,7 @@ const SignupPage = () => {
 
       </div>
 
-      <img src={img} alt="A bowl with a dish." className="h-[500px]" />
+      <img src={img} alt="A bowl with a dish." loading="lazy" className="h-[500px]" />
 
     </section>
   );

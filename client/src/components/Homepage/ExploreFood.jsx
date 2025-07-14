@@ -2,11 +2,29 @@ import { useContext, useEffect, useState } from "react";
 import MenuContext from "../../context/Menu/MenuContext.jsx";
 import { Link } from "react-router-dom";
 import CartContext from "../../context/Cart/CartContext.jsx";
+import beefPho from "../../assets/dishes/beefPho.jpg";
+import grilledSalmonTeriyaki from "../../assets/dishes/grilledSalmonTeriyaki.jpg";
+import lemongrassTea from "../../assets/dishes/lemongrassTea.jpg";
+import misoSoup from "../../assets/dishes/misoSoup.jpg";
+import padThai from "../../assets/dishes/padThai.jpg";
 
 const ExploreFood = () => {
   const { onlineMenu } = useContext(MenuContext);
   const { addToCart } = useContext(CartContext);
   const [menuData, setMenuData] = useState(null);
+
+  const fallbackImages = [
+    beefPho,
+    grilledSalmonTeriyaki,
+    lemongrassTea,
+    misoSoup,
+    padThai
+  ];
+
+  const getDishImage = (dishId) => {
+    const index = dishId % fallbackImages.length;
+    return fallbackImages[index];
+  };
 
   useEffect(() => {
     const fetchMenu = async () => {
@@ -43,9 +61,10 @@ const ExploreFood = () => {
                   Add To Cart
                 </button>
                 <img
-                  src={dish.imageURL}
+                  src={getDishImage(dish.id)}
                   alt={dish.name}
-                  className="h-56 group-hover:opacity-50 transition-opacity duration-300"
+                  loading="lazy"
+                  className="h-56 w-full group-hover:opacity-50 transition-opacity duration-300 object-cover"
                 />
               </div>
               <h3 className="text-xl font-medium">{dish.name}</h3>

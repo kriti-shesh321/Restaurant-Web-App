@@ -30,6 +30,7 @@ const Hero = ({ user }) => {
             src={slide1}
             className="w-full h-full object-cover"
             alt="Slide 1"
+            loading="lazy"
           />
         </div>
 
@@ -38,6 +39,7 @@ const Hero = ({ user }) => {
             src={slide2}
             className="w-full h-full object-cover"
             alt="Slide 2"
+            loading="lazy"
           />
         </div>
 
@@ -46,6 +48,7 @@ const Hero = ({ user }) => {
             src={slide3}
             className="w-full h-full object-cover"
             alt="Slide 3"
+            loading="lazy"
           />
         </div>
       </div>

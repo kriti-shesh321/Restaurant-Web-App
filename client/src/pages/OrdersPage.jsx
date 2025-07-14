@@ -28,7 +28,7 @@ const OrdersPage = () => {
     <div className="max-w-[80%] pt-20 mx-auto">
       <h1 className="text-2xl font-bold text-maroon mb-10">My Orders</h1>
       <div className="flex-col text-gray-700">
-        {orders && orders.map(order => (
+        {orders && orders.length > 0 ? orders.map(order => (
           <Link to={`/orders/${order?.id}`} key={order?.id} className="grid grid-cols-3 gap-4 p-4 items-center border border-maroon mb-5 shadow-lg ">
             <div>
               <h2 className="text-lg font-medium mb-3">Order ##{order?.id}</h2>
@@ -46,7 +46,9 @@ const OrdersPage = () => {
               <p>Total: ₹ {order?.totalAmount}</p>
             </div>
           </Link>
-        ))}
+        )) :
+          <div className="text-lg font-bold text-gray-500">No orders found.</div>
+        }
       </div>
 
     </div>

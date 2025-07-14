@@ -45,9 +45,9 @@ const HomePage = () => {
                 <ExploreFood />
             </section>
 
-            <section id="reviews">
+            {/* <section id="reviews">
                 <Reviews data={reviews} />
-            </section>
+            </section> */}
 
             <section>
                 <ActionButtons />

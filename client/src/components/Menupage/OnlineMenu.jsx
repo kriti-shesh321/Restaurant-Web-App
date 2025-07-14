@@ -1,6 +1,11 @@
 import { useState, useEffect, useContext } from "react";
 import { FaPlusCircle, FaMinusCircle, FaPlus } from "react-icons/fa";
 import CartContext from "../../context/Cart/CartContext.jsx";
+import beefPho from "../../assets/dishes/beefPho.jpg";
+import grilledSalmonTeriyaki from "../../assets/dishes/grilledSalmonTeriyaki.jpg";
+import lemongrassTea from "../../assets/dishes/lemongrassTea.jpg";
+import misoSoup from "../../assets/dishes/misoSoup.jpg";
+import padThai from "../../assets/dishes/padThai.jpg";
 
 const OnlineMenu = ({ data, categories }) => {
   const { cart, addToCart, removeFromCart } = useContext(CartContext);
@@ -9,6 +14,19 @@ const OnlineMenu = ({ data, categories }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [category, setCategory] = useState("All");
   const [filteredData, setFilteredData] = useState(data);
+
+  const fallbackImages = [
+    beefPho,
+    grilledSalmonTeriyaki,
+    lemongrassTea,
+    misoSoup,
+    padThai
+  ];
+
+  const getDishImage = (dishId) => {
+    const index = dishId % fallbackImages.length;
+    return fallbackImages[index];
+  };
 
   useEffect(() => {
     if (!searchQuery && category === "All") {
@@ -83,7 +101,12 @@ const OnlineMenu = ({ data, categories }) => {
           filteredData.map((dish) => (
             <div key={dish.id} className={`flex py-5 md:p-5 ${showGridView ? "flex-col border shadow space-y-5" : "h-[180px] md:h-[200px] gap-5 lg:gap-10"}`}>
               <div className={showGridView ? "h-[180px] lg:h-[300px] relative flex justify-center group" : "h-full"}>
-                <img src={dish.imageURL} alt={dish.name} loading="lazy" className={`shadow-lg transition-all duration-500 ${showGridView ? "absolute w-[90%] h-[85%] z-10 group-hover:size-full" : "max-w-fit w-[150px] md:w-[200px] h-full"}`} />
+                <img
+                  src={getDishImage(dish.id)}
+                  alt={dish.name}
+                  loading="lazy"
+                  className={`shadow-lg transition-all duration-500 ${showGridView ? "absolute size-[90%] z-10 group-hover:size-full" : "max-w-fit w-[150px] md:w-[200px] h-full"}`}
+                />
                 <div
                   className={`absolute bottom-0 h-1/2 w-full bg-white transition-all duration-300 group-hover:bg-red-900 group-hover:h-full ${!showGridView && "hidden"}`}
                 ></div>

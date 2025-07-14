@@ -12,6 +12,7 @@ import Cart from "./components/Cart";
 import OrdersPage from "./pages/OrdersPage";
 import OrderDetails from "./components/Orders/OrderDetails";
 import OrderSuccess from "./components/Orders/OrderSuccess";
+import { ToastContainer } from "react-toastify";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
           </Routes>
         </div>
         <Footer />
+        <ToastContainer />
       </div>
     </Router>
   );
