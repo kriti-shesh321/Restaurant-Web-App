@@ -1,5 +1,4 @@
 import { useState } from "react";
-import clsx from "clsx";
 
 const BlurImage = ({ src, blurSrc, alt }) => {
   const [loaded, setLoaded] = useState(false);
@@ -10,7 +9,9 @@ const BlurImage = ({ src, blurSrc, alt }) => {
       <img
         src={blurSrc}
         alt="blur placeholder"
-        className="w-full h-full object-cover absolute top-0 left-0"
+        className={`w-full h-full object-cover absolute top-0 left-0 blur-xl scale-110 transition-opacity duration-700
+          ${loaded ? "opacity-0" : "opacity-100"}
+        `}
         aria-hidden="true"
       />
 
@@ -19,10 +20,9 @@ const BlurImage = ({ src, blurSrc, alt }) => {
         src={src}
         alt={alt}
         onLoad={() => setLoaded(true)}
-        className={clsx(
-          "w-full h-full object-cover transition-opacity duration-700",
-          loaded ? "opacity-100" : "opacity-0"
-        )}
+        className={`w-full h-full object-cover transition-opacity duration-700
+          {loaded ? "opacity-100" : "opacity-0"}
+        `}
       />
     </div>
   );

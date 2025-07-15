@@ -105,7 +105,7 @@ const SignupPage = () => {
         <img
           src={imgBlur}
           alt="blur placeholder"
-          className={`w-full h-full object-cover transition-opacity duration-500 ${imageLoaded ? "opacity-0" : "opacity-100"
+          className={`w-full h-full object-cover transition-opacity duration-500 blur-xl scale-110 ${imageLoaded ? "opacity-0" : "opacity-100"
             }`}
         />
 
