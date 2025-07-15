@@ -1,9 +1,13 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FaBasketShopping } from 'react-icons/fa6';
+import BlurImage from "./BlurImage";
 import slide1 from '../../assets/heroSlides/slide1.jpg';
 import slide2 from '../../assets/heroSlides/slide2.jpg';
 import slide3 from '../../assets/heroSlides/slide3.jpg';
+import blur1 from "../../assets/heroSlides/slide1-blur.webp";
+import blur2 from "../../assets/heroSlides/slide2-blur.webp";
+import blur3 from "../../assets/heroSlides/slide3-blur.webp";
 
 const Hero = ({ user }) => {
   const [currentSlide, setCurrentSlide] = useState(1);
@@ -21,35 +25,20 @@ const Hero = ({ user }) => {
   };
 
   return (
-    <div className="relative w-full h-screen font-text1">
+    <div className="relative w-full h-screen font-text1 bg-gradient-to-br from-yellow-400 to-yellow-100">
 
       <div className="carousel w-full h-full">
 
         <div id="slide1" className={`carousel-item absolute w-full h-full ${currentSlide === 1 ? "opacity-100" : "opacity-0"}`}>
-          <img
-            src={slide1}
-            className="w-full h-full object-cover"
-            alt="Slide 1"
-            loading="lazy"
-          />
+          <BlurImage src={slide1} blurSrc={blur1} alt="Slide 1" />
         </div>
 
         <div id="slide2" className={`carousel-item absolute w-full h-full ${currentSlide === 2 ? "opacity-100" : "opacity-0"}`}>
-          <img
-            src={slide2}
-            className="w-full h-full object-cover"
-            alt="Slide 2"
-            loading="lazy"
-          />
+          <BlurImage src={slide2} blurSrc={blur2} alt="Slide 2" />
         </div>
 
         <div id="slide3" className={`carousel-item absolute w-full h-full ${currentSlide === 3 ? "opacity-100" : "opacity-0"}`}>
-          <img
-            src={slide3}
-            className="w-full h-full object-cover"
-            alt="Slide 3"
-            loading="lazy"
-          />
+          <BlurImage src={slide3} blurSrc={blur3} alt="Slide 3" />
         </div>
       </div>
 

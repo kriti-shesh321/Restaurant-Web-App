@@ -2,8 +2,10 @@ import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaEyeSlash, FaEye } from "react-icons/fa";
 import img from "../assets/signup/image.png";
+import imgBlur from "../assets/signup/image-blur.webp";
 import AuthContext from "../context/Auth/AuthContext";
 import { toast } from "react-toastify";
+import BlurImage from "../components/Homepage/BlurImage";
 
 const SignupPage = () => {
   const { signUp, login } = useContext(AuthContext);
@@ -15,6 +17,7 @@ const SignupPage = () => {
     password: "",
   });
   const [loading, setLoading] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   const navigate = useNavigate();
 
@@ -97,7 +100,24 @@ const SignupPage = () => {
 
       </div>
 
-      <img src={img} alt="A bowl with a dish." loading="lazy" className="h-[500px]" />
+      <div className="relative h-[500px] w-[350px] sm:w-[400px] md:w-[500px] overflow-hidden">
+        {/* Blur placeholder */}
+        <img
+          src={imgBlur}
+          alt="blur placeholder"
+          className={`w-full h-full object-cover transition-opacity duration-500 ${imageLoaded ? "opacity-0" : "opacity-100"
+            }`}
+        />
+
+        {/* Actual image */}
+        <img
+          src={img}
+          alt="A bowl with a dish."
+          onLoad={() => setImageLoaded(true)}
+          className={`w-full h-full object-cover absolute top-0 left-0 transition-opacity duration-500 ${imageLoaded ? "opacity-100" : "opacity-0"
+            }`}
+        />
+      </div>
 
     </section>
   );

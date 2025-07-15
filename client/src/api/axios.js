@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "https://restaurant-web-app-production.up.railway.app/api/v1" || "/api/v1",
+  baseURL: import.meta.env.VITE_BACKEND_URL || "/api/v1",
   headers: { "Content-Type": "application/json" },
 });
 
