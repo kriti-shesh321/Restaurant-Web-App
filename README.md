@@ -30,7 +30,7 @@ A full-stack restaurant web app built using the **React, Node.js, Express, and M
 
 1. Clone the repo:
    ```bash
-   git clone https://github.com/your-username/restaurant-app.git
+   git clone https://github.com/kriti-shesh321/Restaurant-Web-App.git
    ```
 
 2. Install dependencies:
