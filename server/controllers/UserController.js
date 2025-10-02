@@ -1,18 +1,13 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import path from "path";
-import fs from "fs";
-import { fileURLToPath } from "url";
-import User from "../models/User.js";
+import { User } from "../models/index.js";
+import cloudinary from "../config/cloudinary.js";
 import { formatImageUrl } from "../utils/imageUrlFormatter.js";
 
 dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET;
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 // @desc user signup
 // @route POST api/v1/user/signup
@@ -88,15 +83,56 @@ export const updateProfile = async (req, res, next) => {
             currentUser.email = email;
         }
 
-        // updating profile image
-        if (req.file) {
-            if (currentUser.profileImage) {
-                const oldPath = path.join(__dirname, "..", currentUser.profileImage);
-                if (fs.existsSync(oldPath)) {
-                    fs.unlinkSync(oldPath);
+        // updating profile image -> upload to Cloudinary
+        if (req.file && req.file.buffer) {
+            // create a deterministic public_id so we can delete later
+            const publicId = `profile/${req.user}/avatar-${Date.now()}`;
+
+            // upload buffer via upload_stream
+            const streamUpload = (buffer) => {
+                return new Promise((resolve, reject) => {
+                    const stream = cloudinary.uploader.upload_stream(
+                        { public_id: publicId, folder: undefined, overwrite: true, resource_type: "image" },
+                        (error, result) => {
+                            if (error) return reject(error);
+                            resolve(result);
+                        }
+                    );
+                    stream.end(buffer);
+                });
+            };
+
+            // delete previous cloudinary image if we have stored public id
+            if (currentUser.profileImagePublicId) {
+                try {
+                    await cloudinary.uploader.destroy(currentUser.profileImagePublicId, { resource_type: "image" });
+                } catch (err) {
+                    console.error("Cloudinary delete failed:", err);
+                }
+            } else if (currentUser.profileImage) {
+                // fallback: try to extract public_id from URL (best-effort). If this fails, skip deletion.
+                try {
+                    const url = currentUser.profileImage;
+                    const parts = url.split("/upload/")[1];
+                    if (parts) {
+                        // remove file extension and possible version prefix
+                        const afterUpload = parts.replace(/\.[a-zA-Z0-9]+(\?.*)?$/, "");
+                        const afterVersionRemoved = afterUpload.replace(/^v\d+\//, "");
+                        const possiblePublicId = afterVersionRemoved;
+                        // attempting destroy - may fail, ignoring errors
+                        await cloudinary.uploader.destroy(possiblePublicId, { resource_type: "image" });
+                    }
+                } catch (err) {
+                    console.warn("Could not parse/deleted old cloudinary image - skipping. Err:", err.message || err);
                 }
             }
-            currentUser.profileImage = `/uploads/profile/${req.user}/${req.file.filename}`;
+
+            // Upload new image
+            const result = await streamUpload(req.file.buffer);
+
+            // store URL and public id on user
+            currentUser.profileImage = result.secure_url;
+            currentUser.profileImagePublicId = result.public_id;
         }
 
         // updating password

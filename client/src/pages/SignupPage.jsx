@@ -5,7 +5,6 @@ import img from "../assets/signup/image.png";
 import imgBlur from "../assets/signup/image-blur.webp";
 import AuthContext from "../context/Auth/AuthContext";
 import { toast } from "react-toastify";
-import BlurImage from "../components/Homepage/BlurImage";
 
 const SignupPage = () => {
   const { signUp, login } = useContext(AuthContext);

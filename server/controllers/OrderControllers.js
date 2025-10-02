@@ -3,40 +3,6 @@ import Sequelize from "sequelize";
 
 //@desc Create a new order
 //@route POST /api/v1/order
-// export const createOrder = async (req, res) => {
-//     try {
-//         const { userId, isGuest, items, deliveryAddressId, totalAmount } = req.body;
-
-//         if (!deliveryAddressId || !items || items.length === 0 || !totalAmount) {
-//             return res.status(400).json({ message: "Invalid order data" });
-//         }
-
-//         const order = await Orders.create({
-//             isGuest,
-//             userId,
-//             deliveryAddressId,
-//             totalAmount
-//         });
-
-//         const orderItems = items.map(item => ({
-//             orderId: order.id,
-//             menuItemId: item.menuItemId,
-//             quantity: item.quantity,
-//             price: item.price,
-//             status: "Confirmed"
-//         }));
-
-//         await OrderItems.bulkCreate(orderItems);
-
-//         await CartItems.destroy({ where: { userId } });
-
-//         res.status(201).json({ message: "Order created successfully", order });
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ message: "Server error" });
-//     }
-// };
-
 export const createOrder = async (req, res, next) => {
     try {
         const userId = req.user || null;

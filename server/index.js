@@ -13,7 +13,7 @@ import cartRoutes from "./routes/cartRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import restaurantSettingsRoutes from "./routes/restaurantSettingsRoutes.js";
 
-dotenv.config({path: "./.env.prod"});
+dotenv.config({path: "./.env"});
 
 const PORT = process.env.PORT;
 
@@ -41,7 +41,7 @@ const start = async () => {
   try {
       //connect to DB
       await sequelize.authenticate();
-      await sequelize.sync();
+      // await sequelize.sync();
       app.listen(PORT, () => console.log(`App listening on port ${PORT}`));
   } catch (error) {
       console.log(error);
