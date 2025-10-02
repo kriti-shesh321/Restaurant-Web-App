@@ -19,6 +19,7 @@ jobs:
           node-version: 22
 
       - name: Install dependencies (root)
+        working-directory: ./server
         run: npm ci
 
       - name: Run Sequelize migrations (server)
