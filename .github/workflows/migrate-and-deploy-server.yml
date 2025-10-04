@@ -28,7 +28,7 @@ jobs:
       - name: Run migrations on Railway (remote)
         working-directory: ./server
         env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_API_KEY }}
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
           RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
         run: |
           echo "Running migrations from Railway network..."
