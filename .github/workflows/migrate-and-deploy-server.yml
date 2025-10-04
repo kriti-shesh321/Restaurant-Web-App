@@ -28,7 +28,7 @@ jobs:
       - name: Login to Railway
         env:
           RAILWAY_API_KEY: ${{ secrets.RAILWAY_API_KEY }}
-        run: railway login --apiKey $RAILWAY_API_KEY
+        run: echo $RAILWAY_API_KEY | railway login --token
 
       - name: Run migrations on Railway (remote)
         working-directory: ./server
