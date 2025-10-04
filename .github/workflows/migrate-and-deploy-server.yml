@@ -1,13 +1,12 @@
-name: Migrate & Deploy Backend (server)
+name: Migrate & Deploy Backend on Railway
 
 on:
   push:
-    branches: [ master ]
-  workflow_dispatch:        # allows manual trigger from Actions tab
+    branches: [ master ]    
+  workflow_dispatch:
 
 jobs:
-  migrate:
-    name: Run DB migrations
+  migrate_and_deploy:
     runs-on: ubuntu-latest
     environment: "Restaurant-Web-App (bountiful-celebration / production)"
     steps:
@@ -23,55 +22,6 @@ jobs:
         working-directory: ./server
         run: npm ci
 
-      - name: Test DB connection (quick)
-        working-directory: ./server
-        env:
-          DATABASE_URL: ${{ secrets.DB_URL }}
-          NODE_ENV: production
-        run: |
-          echo ">>> Testing DB connection..."
-          node -e "
-            const { Sequelize } = require('sequelize');
-            (async () => {
-              const url = process.env.DATABASE_URL;
-              if (!url) { console.error('NO DB URL'); process.exit(2); }
-              const sequelize = new Sequelize(url, { dialect: 'mysql', logging: false });
-              try {
-                await sequelize.authenticate();
-                console.log('DB connection OK');
-                await sequelize.close();
-                process.exit(0);
-              } catch (err) {
-                console.error('DB connection ERROR:');
-                console.error(err && err.message ? err.message : err);
-                process.exit(10);
-              }
-            })();
-          "
-          
-      - name: Run Sequelize migrations (server) - verbose
-        working-directory: ./server
-        env:
-          DATABASE_URL: ${{ secrets.DB_URL }}
-          NODE_ENV: production
-        run: |
-          echo ">>> Running migrations..."
-          npx sequelize-cli db:migrate --config config/config.cjs --migrations-path migrations
-
-  deploy:
-    name: Deploy backend (server)
-    needs: migrate
-    runs-on: ubuntu-latest
-    environment: "Restaurant-Web-App (bountiful-celebration / production)"
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Use Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
       - name: Install Railway CLI
         run: npm i -g @railway/cli
 
@@ -80,10 +30,20 @@ jobs:
           RAILWAY_API_KEY: ${{ secrets.RAILWAY_API_KEY }}
         run: railway login --apiKey $RAILWAY_API_KEY
 
-      - name: Deploy backend (server folder)
+      - name: Run migrations on Railway (remote)
         working-directory: ./server
         env:
           RAILWAY_API_KEY: ${{ secrets.RAILWAY_API_KEY }}
           RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
         run: |
+          echo "Running migrations from Railway network..."
+          railway run --project $RAILWAY_PROJECT_ID -- npx sequelize-cli db:migrate --config config/config.cjs --migrations-path migrations
+
+      - name: Deploy backend (server folder) to Railway
+        working-directory: ./server
+        env:
+          RAILWAY_API_KEY: ${{ secrets.RAILWAY_API_KEY }}
+          RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
+        run: |
+          echo "Deploying server to Railway..."
           railway up --project $RAILWAY_PROJECT_ID --yes --no-watch
