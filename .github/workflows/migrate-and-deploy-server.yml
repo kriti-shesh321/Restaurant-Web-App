@@ -23,23 +23,39 @@ jobs:
         working-directory: ./server
         run: npm ci
 
+      - name: Test DB connection (quick)
+        working-directory: ./server
+        env:
+          DATABASE_URL: ${{ secrets.DB_URL }}
+          NODE_ENV: production
+        run: |
+          echo ">>> Testing DB connection..."
+          node -e "
+            const { Sequelize } = require('sequelize');
+            (async () => {
+              const url = process.env.DATABASE_URL;
+              if (!url) { console.error('NO DB URL'); process.exit(2); }
+              const sequelize = new Sequelize(url, { dialect: 'mysql', logging: false });
+              try {
+                await sequelize.authenticate();
+                console.log('DB connection OK');
+                await sequelize.close();
+                process.exit(0);
+              } catch (err) {
+                console.error('DB connection ERROR:');
+                console.error(err && err.message ? err.message : err);
+                process.exit(10);
+              }
+            })();
+          "
+          
       - name: Run Sequelize migrations (server) - verbose
         working-directory: ./server
         env:
           DATABASE_URL: ${{ secrets.DB_URL }}
           NODE_ENV: production
         run: |
-          echo ">>> ENV CHECK <<<"
-          node -v
-          npm -v
-          echo "PWD: $(pwd)"
-          echo "Listing migrations folder:"
-          ls -la migrations
-          echo "Listing config file:"
-          ls -la config || true
-          echo "Printing config file head (if present):"
-          head -n 50 config/config.cjs || true
-          echo "Running migrations..."
+          echo ">>> Running migrations..."
           npx sequelize-cli db:migrate --config config/config.cjs --migrations-path migrations
 
   deploy:
