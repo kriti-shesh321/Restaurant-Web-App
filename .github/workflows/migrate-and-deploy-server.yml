@@ -3,25 +3,26 @@ name: Migrate & Deploy Backend (server)
 on:
   push:
     branches: [ master ]
-  workflow_dispatch:        # allows manual trigger from Actions tab
+  workflow_dispatch:
 
 jobs:
   migrate_and_deploy:
-    name: Run DB migrations & Deploy
+    name: Run DB migrations & deploy to Railway
     runs-on: ubuntu-latest
     environment: "Restaurant-Web-App (bountiful-celebration / production)"
 
     env:
-      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-      RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}           
+      RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }} 
+      RAILWAY_SERVICE: "Restaurant-Web-App"                 
       DATABASE_URL: ${{ secrets.DB_URL }}
       NODE_ENV: production
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -29,26 +30,38 @@ jobs:
       - name: Install Railway CLI
         run: npm i -g @railway/cli
 
-      - name: Verify Railway authentication
+      - name: Debug - show railway and node versions
         run: |
-          echo ">>> Checking Railway authentication..."
-          railway whoami || echo "⚠️  Railway authentication failed (check RAILWAY_TOKEN)."
+          node -v
+          npm -v
+          railway --version || true
 
-      - name: Run Sequelize migrations on Railway
+      - name: Verify Railway account token (whoami)
+        env:
+          RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
+        run: |
+          echo ">>> railway whoami (using RAILWAY_API_TOKEN)"
+          RAILWAY_API_TOKEN=$RAILWAY_API_TOKEN railway whoami || (echo "whoami failed - check RAILWAY_API_TOKEN" && exit 1)
+
+      - name: Link repo to Railway project (non-interactive)
+        env:
+          RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
+        run: |
+          echo ">>> Linking repo to project id: $RAILWAY_PROJECT_ID"
+          # link the current directory to the project so subsequent railway commands run against it
+          RAILWAY_API_TOKEN=$RAILWAY_API_TOKEN railway link $RAILWAY_PROJECT_ID
+
+      - name: Run Sequelize migrations on Railway (remote)
         working-directory: ./server
         run: |
-          echo ">>> Running migrations from Railway network..."
-          railway run \
-            --project $RAILWAY_PROJECT_ID \
-            --service "Restaurant-Web-App" \
-            -- \
+          echo ">>> Running migrations using railway run (service: $RAILWAY_SERVICE)"
+          # RAILWAY_TOKEN (project token) is read from job env automatically by CLI v4
+          railway run --service "$RAILWAY_SERVICE" -- \
             npx sequelize-cli db:migrate --config config/config.cjs --migrations-path migrations
 
-      - name: Deploy backend (server folder)
+      - name: Deploy backend (server) to Railway
         working-directory: ./server
         run: |
-          echo ">>> Deploying backend to Railway..."
-          railway up \
-            --project $RAILWAY_PROJECT_ID \
-            --service "Restaurant-Web-App" \
-            --yes --no-watch
+          echo ">>> Deploying service $RAILWAY_SERVICE to Railway"
+          # RAILWAY_TOKEN is available in job env
+          railway up --service "$RAILWAY_SERVICE" --yes --no-watch
