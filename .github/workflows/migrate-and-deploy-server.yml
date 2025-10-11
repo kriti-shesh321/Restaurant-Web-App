@@ -7,14 +7,14 @@ on:
 
 jobs:
   migrate_and_deploy:
-    name: Run DB migrations & Deploy (Railway project token)
+    name: Run DB migrations & Deploy (Railway v4)
     runs-on: ubuntu-latest
     environment: "Restaurant-Web-App (bountiful-celebration / production)"
 
     env:
-      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}         # project token (required)
-      RAILWAY_SERVICE: "Restaurant-Web-App"               # your service name
-      RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }} # optional, keep if you need it
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}          # project token
+      RAILWAY_SERVICE: "Restaurant-Web-App"                # your backend service name
+      RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }} # optional
       DATABASE_URL: ${{ secrets.DB_URL }}
       NODE_ENV: production
 
@@ -40,7 +40,7 @@ jobs:
         working-directory: ./server
         run: |
           echo ">>> Running migrations using railway run (service: $RAILWAY_SERVICE)"
-          # Use --service to select the service; the CLI reads RAILWAY_TOKEN from env
+          # v4 syntax — note the '--' separator for command arguments
           railway run --service "$RAILWAY_SERVICE" -- \
             npx sequelize-cli db:migrate --config config/config.cjs --migrations-path migrations
 
@@ -48,4 +48,6 @@ jobs:
         working-directory: ./server
         run: |
           echo ">>> Deploying service $RAILWAY_SERVICE to Railway"
-          railway up --service "$RAILWAY_SERVICE" --yes --no-watch
+          # For v4 CLI: --service is supported, no need for --yes / --no-watch
+          # '--detach' means deploy without tailing logs
+          railway up --service "$RAILWAY_SERVICE" --detach
