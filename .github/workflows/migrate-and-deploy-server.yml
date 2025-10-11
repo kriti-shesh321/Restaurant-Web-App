@@ -36,17 +36,28 @@ jobs:
           npm -v
           railway --version || true
 
-      - name: Verify Railway account token (whoami)
+      - name: Debug Railway auth + whoami
         env:
+          # ensure both names exist and point to the same secret
           RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
         run: |
-          echo ">>> Checking if RAILWAY_API_TOKEN is present..."
-          if [ -z "$RAILWAY_API_TOKEN" ]; then
-            echo "ERROR: RAILWAY_API_TOKEN is empty. Add it to repo secrets or the Environment."
-            exit 2
-          fi
-          echo ">>> Running railway whoami..."
-          RAILWAY_API_TOKEN="$RAILWAY_API_TOKEN" railway whoami || (echo "whoami failed - check RAILWAY_API_TOKEN (invalid or lacks permissions)" && exit 1)
+          echo ">>> railway version"
+          railway --version || true
+      
+          echo ">>> Check token presence (lengths shown masked)"
+          printf "RAILWAY_API_TOKEN length: %s\n" "${#RAILWAY_API_TOKEN}"
+          printf "RAILWAY_TOKEN length: %s\n" "${#RAILWAY_TOKEN}"
+      
+          echo ">>> whoami attempts"
+          echo "Attempt 1: using RAILWAY_API_TOKEN"
+          RAILWAY_API_TOKEN="$RAILWAY_API_TOKEN" railway whoami || echo "whoami w/ RAILWAY_API_TOKEN failed"
+      
+          echo "Attempt 2: using RAILWAY_TOKEN"
+          RAILWAY_TOKEN="$RAILWAY_TOKEN" railway whoami || echo "whoami w/ RAILWAY_TOKEN failed"
+      
+          echo "Attempt 3: try both at once"
+          RAILWAY_API_TOKEN="$RAILWAY_API_TOKEN" RAILWAY_TOKEN="$RAILWAY_TOKEN" railway whoami || (echo "both failed" && exit 1)
 
       - name: Link repo to Railway project (non-interactive)
         env:
