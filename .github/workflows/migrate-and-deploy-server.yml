@@ -40,8 +40,13 @@ jobs:
         env:
           RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
         run: |
-          echo ">>> railway whoami (using RAILWAY_API_TOKEN)"
-          RAILWAY_API_TOKEN=$RAILWAY_API_TOKEN railway whoami || (echo "whoami failed - check RAILWAY_API_TOKEN" && exit 1)
+          echo ">>> Checking if RAILWAY_API_TOKEN is present..."
+          if [ -z "$RAILWAY_API_TOKEN" ]; then
+            echo "ERROR: RAILWAY_API_TOKEN is empty. Add it to repo secrets or the Environment."
+            exit 2
+          fi
+          echo ">>> Running railway whoami..."
+          RAILWAY_API_TOKEN="$RAILWAY_API_TOKEN" railway whoami || (echo "whoami failed - check RAILWAY_API_TOKEN (invalid or lacks permissions)" && exit 1)
 
       - name: Link repo to Railway project (non-interactive)
         env:
