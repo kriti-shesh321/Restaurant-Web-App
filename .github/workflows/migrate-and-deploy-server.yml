@@ -7,14 +7,14 @@ on:
 
 jobs:
   migrate_and_deploy:
-    name: Run DB migrations & deploy to Railway
+    name: Run DB migrations & Deploy (Railway project token)
     runs-on: ubuntu-latest
     environment: "Restaurant-Web-App (bountiful-celebration / production)"
 
     env:
-      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}           
-      RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }} 
-      RAILWAY_SERVICE: "Restaurant-Web-App"                 
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}         # project token (required)
+      RAILWAY_SERVICE: "Restaurant-Web-App"               # your service name
+      RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }} # optional, keep if you need it
       DATABASE_URL: ${{ secrets.DB_URL }}
       NODE_ENV: production
 
@@ -30,48 +30,17 @@ jobs:
       - name: Install Railway CLI
         run: npm i -g @railway/cli
 
-      - name: Debug - show railway and node versions
+      - name: Debug - show versions (optional)
         run: |
           node -v
           npm -v
           railway --version || true
 
-      - name: Debug Railway auth + whoami
-        env:
-          # ensure both names exist and point to the same secret
-          RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
-        run: |
-          echo ">>> railway version"
-          railway --version || true
-      
-          echo ">>> Check token presence (lengths shown masked)"
-          printf "RAILWAY_API_TOKEN length: %s\n" "${#RAILWAY_API_TOKEN}"
-          printf "RAILWAY_TOKEN length: %s\n" "${#RAILWAY_TOKEN}"
-      
-          echo ">>> whoami attempts"
-          echo "Attempt 1: using RAILWAY_API_TOKEN"
-          RAILWAY_API_TOKEN="$RAILWAY_API_TOKEN" railway whoami || echo "whoami w/ RAILWAY_API_TOKEN failed"
-      
-          echo "Attempt 2: using RAILWAY_TOKEN"
-          RAILWAY_TOKEN="$RAILWAY_TOKEN" railway whoami || echo "whoami w/ RAILWAY_TOKEN failed"
-      
-          echo "Attempt 3: try both at once"
-          RAILWAY_API_TOKEN="$RAILWAY_API_TOKEN" RAILWAY_TOKEN="$RAILWAY_TOKEN" railway whoami || (echo "both failed" && exit 1)
-
-      - name: Link repo to Railway project (non-interactive)
-        env:
-          RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
-        run: |
-          echo ">>> Linking repo to project id: $RAILWAY_PROJECT_ID"
-          # link the current directory to the project so subsequent railway commands run against it
-          RAILWAY_API_TOKEN=$RAILWAY_API_TOKEN railway link $RAILWAY_PROJECT_ID
-
       - name: Run Sequelize migrations on Railway (remote)
         working-directory: ./server
         run: |
           echo ">>> Running migrations using railway run (service: $RAILWAY_SERVICE)"
-          # RAILWAY_TOKEN (project token) is read from job env automatically by CLI v4
+          # Use --service to select the service; the CLI reads RAILWAY_TOKEN from env
           railway run --service "$RAILWAY_SERVICE" -- \
             npx sequelize-cli db:migrate --config config/config.cjs --migrations-path migrations
 
@@ -79,5 +48,4 @@ jobs:
         working-directory: ./server
         run: |
           echo ">>> Deploying service $RAILWAY_SERVICE to Railway"
-          # RAILWAY_TOKEN is available in job env
           railway up --service "$RAILWAY_SERVICE" --yes --no-watch
