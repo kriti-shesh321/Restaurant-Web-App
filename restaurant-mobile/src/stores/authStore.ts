@@ -17,7 +17,7 @@ interface AuthState {
     isInitialized: boolean;
 
     login: (email: string, password: string) => Promise<void>;
-    signup: (name: String, email: string, password: string) => Promise<void>;
+    signup: (name: string, email: string, password: string) => Promise<void>;
 
     initialize: () => Promise<void>;
 
