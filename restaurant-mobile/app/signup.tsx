@@ -3,7 +3,6 @@ import {
     Text,
     TextInput,
     Pressable,
-    StyleSheet,
 } from "react-native";
 
 import { useState } from "react";
@@ -56,20 +55,20 @@ export default function SignupScreen() {
     }
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>
+        <View className="flex-1 justify-center gap-3.5 px-6">
+            <Text className="mb-2 text-3xl font-bold">
                 Create Account
             </Text>
 
             <TextInput
-                style={styles.input}
+                className="rounded-lg border border-gray-300 px-4 py-3.5 text-base"
                 placeholder="Name"
                 value={name}
                 onChangeText={setName}
             />
 
             <TextInput
-                style={styles.input}
+                className="rounded-lg border border-gray-300 px-4 py-3.5 text-base"
                 placeholder="Email"
                 value={email}
                 onChangeText={setEmail}
@@ -78,7 +77,7 @@ export default function SignupScreen() {
             />
 
             <TextInput
-                style={styles.input}
+                className="rounded-lg border border-gray-300 px-4 py-3.5 text-base"
                 placeholder="Password"
                 value={password}
                 onChangeText={setPassword}
@@ -86,17 +85,17 @@ export default function SignupScreen() {
             />
 
             {error ? (
-                <Text style={styles.error}>
+                <Text className="text-red-600">
                     {error}
                 </Text>
             ) : null}
 
             <Pressable
-                style={styles.button}
+                className="items-center rounded-lg bg-green-800 py-3.5"
                 onPress={handleSignup}
                 disabled={isLoading}
             >
-                <Text style={styles.buttonText}>
+                <Text className="font-semibold text-white">
                     {isLoading
                         ? "Creating account..."
                         : "Sign Up"}
@@ -104,57 +103,16 @@ export default function SignupScreen() {
             </Pressable>
 
             <Pressable
+                className="items-center py-2"
                 onPress={() => router.replace("/login")}
             >
-                <Text style={styles.link}>
-                    Already have an account? Login
+                <Text className="text-gray-700">
+                    Already have an account?{" "}
+                    <Text className="font-semibold text-green-800">
+                        Login
+                    </Text>
                 </Text>
             </Pressable>
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 24,
-        justifyContent: "center",
-        gap: 14,
-    },
-
-    title: {
-        fontSize: 30,
-        fontWeight: "700",
-        marginBottom: 10,
-    },
-
-    input: {
-        borderWidth: 1,
-        borderColor: "#ccc",
-        borderRadius: 8,
-        padding: 14,
-        fontSize: 16,
-    },
-
-    button: {
-        backgroundColor: "#9d1d1f",
-        padding: 15,
-        borderRadius: 8,
-        alignItems: "center",
-    },
-
-    buttonText: {
-        color: "#fff",
-        fontSize: 16,
-        fontWeight: "600",
-    },
-
-    link: {
-        textAlign: "center",
-        marginTop: 8,
-    },
-
-    error: {
-        color: "red",
-    },
-});

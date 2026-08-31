@@ -2,7 +2,6 @@ import {
     View,
     Text,
     Pressable,
-    StyleSheet,
 } from "react-native";
 
 import { Redirect } from "expo-router";
@@ -31,55 +30,27 @@ export default function HomeScreen() {
     }
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>
+        <View className="flex-1 items-center justify-center gap-3 px-6">
+            <Text className="text-3xl font-bold">
                 Restaurant Mobile
             </Text>
 
-            <Text>
+            <Text className="text-base">
                 Welcome, {user?.name}
             </Text>
 
-            <Text>
+            <Text className="text-gray-600">
                 {user?.email}
             </Text>
 
             <Pressable
-                style={styles.button}
+                className="mt-5 rounded-lg bg-red-800 px-6 py-3.5"
                 onPress={handleLogout}
             >
-                <Text style={styles.buttonText}>
+                <Text className="font-semibold text-white">
                     Logout
                 </Text>
             </Pressable>
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 24,
-        justifyContent: "center",
-        alignItems: "center",
-        gap: 12,
-    },
-
-    title: {
-        fontSize: 28,
-        fontWeight: "700",
-    },
-
-    button: {
-        backgroundColor: "#9d1d1f",
-        paddingHorizontal: 24,
-        paddingVertical: 14,
-        borderRadius: 8,
-        marginTop: 20,
-    },
-
-    buttonText: {
-        color: "white",
-        fontWeight: "600",
-    },
-});

@@ -40,13 +40,22 @@ export const useAuthStore = create<AuthState>((set) => ({
 
             await saveToken(data.token);
 
+            const user = await getCurrentUser();
+
             set({
                 token: data.token,
-                user: data.user,
+                user,
                 isLoading: false,
             });
         } catch (error) {
-            set({ isLoading: false });
+            await removeToken();
+
+            set({
+                token: null,
+                user: null,
+                isLoading: false,
+            });
+
             throw error;
         }
     },
@@ -61,13 +70,22 @@ export const useAuthStore = create<AuthState>((set) => ({
 
             await saveToken(data.token);
 
+            const user = await getCurrentUser();
+
             set({
                 token: data.token,
-                user: data.user,
+                user,
                 isLoading: false,
             });
         } catch (error) {
-            set({ isLoading: false });
+            await removeToken();
+
+            set({
+                token: null,
+                user: null,
+                isLoading: false,
+            });
+
             throw error;
         }
     },

@@ -40,19 +40,13 @@ export default function LoginScreen() {
     }
 
     return (
-        <View
-            style={{
-                flex: 1,
-                padding: 24,
-                justifyContent: "center",
-                gap: 12,
-            }}
-        >
-            <Text style={{ fontSize: 28, fontWeight: "bold" }}>
+        <View className="flex-1 justify-center gap-3 px-6">
+            <Text className="mb-2 text-3xl font-bold">
                 Login
             </Text>
 
             <TextInput
+                className="rounded-lg border border-gray-300 px-4 py-3.5 text-base"
                 placeholder="Email"
                 value={email}
                 onChangeText={setEmail}
@@ -61,6 +55,7 @@ export default function LoginScreen() {
             />
 
             <TextInput
+                className="rounded-lg border border-gray-300 px-4 py-3.5 text-base"
                 placeholder="Password"
                 value={password}
                 onChangeText={setPassword}
@@ -68,20 +63,33 @@ export default function LoginScreen() {
             />
 
             {error ? (
-                <Text style={{ color: "red" }}>{error}</Text>
+                <Text className="text-red-600">
+                    {error}
+                </Text>
             ) : null}
 
             <Pressable
+                className="items-center rounded-lg bg-green-800 py-3.5"
                 onPress={handleLogin}
                 disabled={isLoading}
             >
-                <Text>
-                    {isLoading ? "Logging in..." : "Login"}
+                <Text className="font-semibold text-white">
+                    {isLoading
+                        ? "Logging in..."
+                        : "Login"}
                 </Text>
             </Pressable>
 
-            <Pressable onPress={() => router.push("/signup")}>
-                <Text>Don't have an account? Sign up</Text>
+            <Pressable
+                className="items-center py-2"
+                onPress={() => router.push("/signup")}
+            >
+                <Text className="text-gray-700">
+                    Don't have an account?{" "}
+                    <Text className="font-semibold text-green-800">
+                        Sign up
+                    </Text>
+                </Text>
             </Pressable>
         </View>
     );
