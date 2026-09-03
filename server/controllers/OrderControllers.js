@@ -1,9 +1,12 @@
-import { User, DeliveryAddresses, MenuItem, OrderItems, Orders } from "../models/index.js";
+import { User, DeliveryAddresses, MenuItem, OrderItems, Orders, sequelize } from "../models/index.js";
+
 import Sequelize from "sequelize";
 
 //@desc Create a new order
 //@route POST /api/v1/order
 export const createOrder = async (req, res, next) => {
+    const transaction = await sequelize.transaction();
+
     try {
         const userId = req.user || null;
         const isGuest = !userId;
@@ -96,15 +99,18 @@ export const createOrder = async (req, res, next) => {
 
         // Create order
 
-        const order = await Orders.create({
-            isGuest,
-            userId,
-            orderType,
-            deliveryAddressId: orderType === "delivery" ? deliveryAddressId : null,
-            tableNumber: orderType === "dine-in" ? tableNumber : null,
-            totalAmount: total.toFixed(2),
-            status: "Pending",
-        });
+        const order = await Orders.create(
+            {
+                isGuest,
+                userId,
+                orderType,
+                deliveryAddressId: orderType === "delivery" ? deliveryAddressId : null,
+                tableNumber: orderType === "dine-in" ? tableNumber : null,
+                totalAmount: total.toFixed(2),
+                status: "Pending",
+            },
+            { transaction }
+        );
 
         // Create order items
 
@@ -113,7 +119,9 @@ export const createOrder = async (req, res, next) => {
             ...item,
         }));
 
-        await OrderItems.bulkCreate(orderItemsData);
+        await OrderItems.bulkCreate(orderItemsData, { transaction });
+
+        await transaction.commit();
 
         return res.status(201).json({
             message: "Order placed.",
