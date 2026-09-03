@@ -9,6 +9,7 @@ import {
 
 import type { User } from "../types/auth";
 import { setUnauthorizedHandler } from "../auth/authEvents";
+import { useCartStore } from "../stores/cartStore";
 
 interface AuthState {
     token: string | null;
@@ -125,6 +126,8 @@ export const useAuthStore = create<AuthState>((set) => ({
     logout: async () => {
         await removeToken();
 
+        useCartStore.getState().clearCart();
+
         set({
             token: null,
             user: null,
@@ -133,6 +136,8 @@ export const useAuthStore = create<AuthState>((set) => ({
 
     handleUnauthorized: async () => {
         await removeToken();
+
+        useCartStore.getState().clearCart();
 
         set({
             token: null,

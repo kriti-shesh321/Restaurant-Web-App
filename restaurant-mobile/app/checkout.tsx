@@ -6,6 +6,8 @@ import {
     View,
 } from "react-native";
 
+import axios from "axios";
+
 import { useState, } from "react";
 import { useRouter } from "expo-router";
 
@@ -58,7 +60,6 @@ export default function CheckoutScreen() {
     async function handleAddAddress() {
         if (
             !address.trim() ||
-            !contact.trim() ||
             !city.trim() ||
             !state.trim() ||
             !country.trim() ||
@@ -72,11 +73,11 @@ export default function CheckoutScreen() {
                 await addAddressMutation.mutateAsync({
                     type: addressType,
                     address: address.trim(),
-                    contact: contact.trim(),
                     city: city.trim(),
                     state: state.trim(),
                     country: country.trim(),
                     zipCode: zipCode.trim(),
+                    ...(contact.trim() ? { contact: contact.trim() } : {}),
                 });
 
             setSelectedAddressId(newAddress.id);
@@ -301,7 +302,7 @@ export default function CheckoutScreen() {
 
                             <TextInput
                                 className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3"
-                                placeholder="Contact number"
+                                placeholder="Contact number (Optional)"
                                 value={contact}
                                 onChangeText={setContact}
                                 keyboardType="phone-pad"
@@ -350,7 +351,10 @@ export default function CheckoutScreen() {
 
                             {addAddressMutation.isError && (
                                 <Text className="text-center text-red-600">
-                                    Unable to save address. Please try again.
+                                    {axios.isAxiosError(addAddressMutation.error)
+                                        ? addAddressMutation.error.response?.data?.message ??
+                                        "Unable to save address. Please try again."
+                                        : "Unable to save address. Please try again."}
                                 </Text>
                             )}
                         </View>

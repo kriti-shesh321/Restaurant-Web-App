@@ -9,7 +9,7 @@ export async function addDeliveryAddress(
     payload: {
         type: "Home" | "Work" | "Other";
         address: string;
-        contact: string;
+        contact?: string;
         city: string;
         state: string;
         country: string;
