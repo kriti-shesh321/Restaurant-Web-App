@@ -11,6 +11,7 @@ import { useMemo, useState } from "react";
 import { Redirect, useRouter } from "expo-router";
 
 import { useAuthStore } from "../src/stores/authStore";
+import { useCartStore } from "../src/stores/cartStore";
 
 import {
     useOnlineMenu,
@@ -47,9 +48,9 @@ export default function HomeScreen() {
         (state) => state.logout
     );
 
-    async function handleLogout() {
-        await logout();
-    }
+    const addItem = useCartStore(
+        (state) => state.addItem
+    );
 
     const {
         data: menu = [],
@@ -84,6 +85,18 @@ export default function HomeScreen() {
             return matchesSearch && matchesCategory;
         });
     }, [menu, search, selectedCategory]);
+
+    const cartItemCount = useCartStore(
+        (state) =>
+            state.items.reduce(
+                (total, item) => total + item.quantity,
+                0
+            )
+    );
+
+    async function handleLogout() {
+        await logout();
+    }
 
     if (!token) {
         return <Redirect href="/login" />;
@@ -132,14 +145,25 @@ export default function HomeScreen() {
                         </Text>
                     </View>
 
-                    <Pressable
-                        className="rounded-lg bg-gray-100 px-3 py-2"
-                        onPress={handleLogout}
-                    >
-                        <Text className="font-semibold text-gray-700">
-                            Logout
-                        </Text>
-                    </Pressable>
+                    <View className="flex-row items-center gap-2">
+                        <Pressable
+                            className="rounded-lg bg-red-800 px-4 py-2"
+                            onPress={() => router.push("/cart")}
+                        >
+                            <Text className="font-semibold text-white">
+                                Cart ({cartItemCount})
+                            </Text>
+                        </Pressable>
+
+                        <Pressable
+                            className="rounded-lg bg-gray-100 px-3 py-2"
+                            onPress={handleLogout}
+                        >
+                            <Text className="font-semibold text-gray-700">
+                                Logout
+                            </Text>
+                        </Pressable>
+                    </View>
                 </View>
 
                 <TextInput
@@ -203,6 +227,7 @@ export default function HomeScreen() {
                     <MenuCard
                         item={item}
                         image={getDishImage(item.id)}
+                        onAddToCart={() => addItem(item)}
                     />
                 )}
             />
@@ -213,11 +238,13 @@ export default function HomeScreen() {
 interface MenuCardProps {
     item: MenuItem;
     image: any;
+    onAddToCart: () => void;
 }
 
 function MenuCard({
     item,
     image,
+    onAddToCart,
 }: MenuCardProps) {
     return (
         <View>
@@ -250,6 +277,15 @@ function MenuCard({
                 <Text className="mt-2 text-xs text-gray-400">
                     {item.category.name}
                 </Text>
+
+                <Pressable
+                    className="mt-4 items-center rounded-lg bg-red-800 py-3"
+                    onPress={onAddToCart}
+                >
+                    <Text className="font-semibold text-white">
+                        Add to Cart
+                    </Text>
+                </Pressable>
             </View>
         </View>
     );
