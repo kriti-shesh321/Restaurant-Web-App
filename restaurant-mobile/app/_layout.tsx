@@ -64,6 +64,16 @@ export default function RootLayout() {
                     }}
                 />
 
+                <Stack.Screen
+                    name="orders"
+                    options={{ title: "Your Orders" }}
+                />
+
+                <Stack.Screen
+                    name="orders/[id]"
+                    options={{ title: "Order Details" }}
+                />
+
             </Stack>
         </QueryClientProvider>
     );

@@ -126,11 +126,16 @@ export default function CheckoutScreen() {
         };
 
         try {
-            await createOrderMutation.mutateAsync(payload);
+            const result = await createOrderMutation.mutateAsync(payload);
 
             clearCart();
 
-            router.replace("/order-success");
+            router.replace({
+                pathname: "/order-success",
+                params: {
+                    orderId: String(result.order.id),
+                },
+            });
         } catch (error) {
             console.error("Failed to place order:", error);
         }
@@ -421,8 +426,7 @@ export default function CheckoutScreen() {
 
             {createOrderMutation.isError && (
                 <Text className="mt-3 text-center text-red-600">
-                    Unable to place order. Please try
-                    again.
+                    Unable to place order. Please try again.
                 </Text>
             )}
         </ScrollView>

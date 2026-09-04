@@ -157,6 +157,15 @@ export default function HomeScreen() {
 
                         <Pressable
                             className="rounded-lg bg-gray-100 px-3 py-2"
+                            onPress={() => router.push("/orders")}
+                        >
+                            <Text className="font-semibold text-gray-700">
+                                Orders
+                            </Text>
+                        </Pressable>
+
+                        <Pressable
+                            className="rounded-lg bg-gray-100 px-3 py-2"
                             onPress={handleLogout}
                         >
                             <Text className="font-semibold text-gray-700">
