@@ -134,6 +134,22 @@ export default function OrderDetailScreen() {
                 }}
             />
 
+            {order.payment && (
+                <View className="mt-4 border-t border-gray-100 pt-4">
+                    <Text className="text-sm font-semibold text-gray-500">
+                        Payment
+                    </Text>
+
+                    <Text className="mt-1 font-semibold text-gray-800">
+                        {order.payment.provider === "stripe"
+                            ? "Card"
+                            : order.payment.provider}
+                        {" · "}
+                        {order.payment.status}
+                    </Text>
+                </View>
+            )}
+
             <ScrollView
                 className="flex-1 bg-gray-50"
                 contentContainerClassName="px-5 pb-10 pt-5"

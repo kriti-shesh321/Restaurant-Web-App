@@ -18,6 +18,10 @@ import { useCreateOrder } from "../src/hooks/useOrders";
 
 import type { OrderType } from "../src/types/order";
 
+import { PaymentSheetError, useStripe } from "@stripe/stripe-react-native";
+
+import { createPaymentIntent } from "../src/api/payments";
+
 export default function CheckoutScreen() {
     const router = useRouter();
 
@@ -28,6 +32,8 @@ export default function CheckoutScreen() {
     const clearCart = useCartStore(
         (state) => state.clearCart
     );
+
+    const { initPaymentSheet, presentPaymentSheet } = useStripe();
 
     const [orderType, setOrderType] = useState<OrderType>("delivery");
 
@@ -47,6 +53,11 @@ export default function CheckoutScreen() {
     const [state, setState] = useState("");
     const [country, setCountry] = useState("");
     const [zipCode, setZipCode] = useState("");
+
+    const [paymentMethod, setPaymentMethod] = useState<"cash" | "card">("cash");
+    const [pendingPaymentOrderId, setPendingPaymentOrderId] = useState<number | null>(null);
+    const [paymentError, setPaymentError] = useState<string | null>(null);
+    const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
     const {
         data: addresses = [],
@@ -111,6 +122,8 @@ export default function CheckoutScreen() {
             return;
         }
 
+        setPaymentError(null);
+
         const payload = {
             orderType,
 
@@ -126,18 +139,74 @@ export default function CheckoutScreen() {
         };
 
         try {
-            const result = await createOrderMutation.mutateAsync(payload);
+            setIsProcessingPayment(true);
 
+            let orderId = pendingPaymentOrderId;
+
+            // Create the order only once for a card payment.
+            // If the user cancels PaymentSheet and retries,
+            // reuse the same pending order.
+            if (!orderId) {
+                const result = await createOrderMutation.mutateAsync(payload);
+
+                orderId = result.order.id;
+
+                setPendingPaymentOrderId(orderId && orderId);
+            }
+
+            if (paymentMethod === "card") {
+                const payment = await createPaymentIntent(orderId);
+
+                const { error: initError } = await initPaymentSheet({
+                    merchantDisplayName: "Restaurant",
+                    paymentIntentClientSecret: payment.clientSecret
+                });
+
+                if (initError) {
+                    setPaymentError(initError.message);
+                    return;
+                }
+
+                const { error: paymentError } =
+                    await presentPaymentSheet();
+
+                if (paymentError) {
+                    if (paymentError.code === PaymentSheetError.Canceled) {
+                        return;
+                    }
+
+                    setPaymentError(paymentError.message);
+
+                    return;
+                }
+            }
+
+            // Only clear the cart after the payment
+            // flow succeeds or cash order is created.
             clearCart();
 
             router.replace({
                 pathname: "/order-success",
                 params: {
-                    orderId: String(result.order.id),
+                    orderId: String(orderId),
+                    paymentMethod,
                 },
             });
+
         } catch (error) {
-            console.error("Failed to place order:", error);
+            console.error(
+                "Failed to place order:",
+                error
+            );
+
+            setPaymentError(
+                axios.isAxiosError(error)
+                    ? error.response?.data?.message ??
+                    "Unable to place order. Please try again."
+                    : "Unable to place order. Please try again."
+            );
+        } finally {
+            setIsProcessingPayment(false);
         }
     }
 
@@ -410,23 +479,86 @@ export default function CheckoutScreen() {
                 ))}
             </View>
 
+            <Text className="mt-8 text-lg font-bold">
+                Payment method
+            </Text>
+
+            <View className="mt-3 gap-3">
+                <Pressable
+                    className={
+                        paymentMethod === "cash"
+                            ? "rounded-xl border-2 border-red-800 bg-red-50 p-4"
+                            : "rounded-xl border border-gray-200 p-4"
+                    }
+                    onPress={() => {
+                        setPaymentMethod("cash");
+                        setPaymentError(null);
+                    }}
+                >
+                    <Text
+                        className={
+                            paymentMethod === "cash"
+                                ? "font-semibold text-red-800"
+                                : "font-semibold text-gray-700"
+                        }
+                    >
+                        Cash on delivery
+                    </Text>
+
+                    <Text className="mt-1 text-sm text-gray-500">
+                        Pay when your order arrives.
+                    </Text>
+                </Pressable>
+
+                <Pressable
+                    className={
+                        paymentMethod === "card"
+                            ? "rounded-xl border-2 border-red-800 bg-red-50 p-4"
+                            : "rounded-xl border border-gray-200 p-4"
+                    }
+                    onPress={() => {
+                        setPaymentMethod("card");
+                        setPaymentError(null);
+                    }}
+                >
+                    <Text
+                        className={
+                            paymentMethod === "card"
+                                ? "font-semibold text-red-800"
+                                : "font-semibold text-gray-700"
+                        }
+                    >
+                        Credit / debit card
+                    </Text>
+
+                    <Text className="mt-1 text-sm text-gray-500">
+                        Secure payment powered by Stripe.
+                    </Text>
+                </Pressable>
+            </View>
+
             <Pressable
                 className="mt-8 items-center rounded-xl bg-red-800 py-4"
                 onPress={handlePlaceOrder}
                 disabled={
-                    createOrderMutation.isPending
+                    createOrderMutation.isPending ||
+                    isProcessingPayment
                 }
             >
                 <Text className="font-bold text-white">
-                    {createOrderMutation.isPending
-                        ? "Placing Order..."
-                        : "Place Order"}
+                    {isProcessingPayment
+                        ? paymentMethod === "card"
+                            ? "Processing..."
+                            : "Placing Order..."
+                        : paymentMethod === "card"
+                            ? "Pay & Place Order"
+                            : "Place Order"}
                 </Text>
             </Pressable>
 
-            {createOrderMutation.isError && (
+            {paymentError && (
                 <Text className="mt-3 text-center text-red-600">
-                    Unable to place order. Please try again.
+                    {paymentError}
                 </Text>
             )}
         </ScrollView>

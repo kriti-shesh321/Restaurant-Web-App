@@ -10,6 +10,13 @@ export type OrderStatus =
     | "Delivered"
     | "Cancelled";
 
+export type PaymentStatus =
+    | "pending"
+    | "processing"
+    | "succeeded"
+    | "failed"
+    | "canceled";
+
 export interface CreateOrderItem {
     menuItemId: number;
     quantity: number;
@@ -22,6 +29,13 @@ export interface CreateOrderPayload {
     items: CreateOrderItem[];
 }
 
+export interface OrderPayment {
+    status: PaymentStatus;
+    provider: string;
+    amount: string;
+    currency: string;
+}
+
 export interface OrderHistoryItem {
     id: number;
     userId: number | null;
@@ -30,6 +44,7 @@ export interface OrderHistoryItem {
     tableNumber: string | null;
     status: OrderStatus;
     totalAmount: string;
+    payment?: OrderPayment | null;
     itemCount: number;
     createdAt: string;
     updatedAt: string;

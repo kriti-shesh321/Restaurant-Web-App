@@ -9,7 +9,11 @@ import { Stack } from "expo-router";
 import { useEffect } from "react";
 import { useAuthStore } from "../src/stores/authStore";
 
+import { StripeProvider } from "@stripe/stripe-react-native";
+
 const queryClient = new QueryClient();
+
+const stripePublishableKey = process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY;
 
 export default function RootLayout() {
     const initialize = useAuthStore(
@@ -29,52 +33,56 @@ export default function RootLayout() {
     }
 
     return (
-        <QueryClientProvider client={queryClient}>
-            <Stack>
-                <Stack.Screen
-                    name="index"
-                    options={{ headerShown: false }}
-                />
+        <StripeProvider publishableKey={stripePublishableKey ?? ""}>
 
-                <Stack.Screen
-                    name="login"
-                    options={{ title: "Login" }}
-                />
+            <QueryClientProvider client={queryClient}>
+                <Stack>
+                    <Stack.Screen
+                        name="index"
+                        options={{ headerShown: false }}
+                    />
 
-                <Stack.Screen
-                    name="signup"
-                    options={{ title: "Sign Up" }}
-                />
+                    <Stack.Screen
+                        name="login"
+                        options={{ title: "Login" }}
+                    />
 
-                <Stack.Screen
-                    name="cart"
-                    options={{ title: "Your Cart" }}
-                />
+                    <Stack.Screen
+                        name="signup"
+                        options={{ title: "Sign Up" }}
+                    />
 
-                <Stack.Screen
-                    name="checkout"
-                    options={{ title: "Checkout" }}
-                />
+                    <Stack.Screen
+                        name="cart"
+                        options={{ title: "Your Cart" }}
+                    />
 
-                <Stack.Screen
-                    name="order-success"
-                    options={{
-                        title: "Order Confirmed",
-                        headerBackVisible: false,
-                    }}
-                />
+                    <Stack.Screen
+                        name="checkout"
+                        options={{ title: "Checkout" }}
+                    />
 
-                <Stack.Screen
-                    name="orders"
-                    options={{ title: "Your Orders" }}
-                />
+                    <Stack.Screen
+                        name="order-success"
+                        options={{
+                            title: "Order Confirmed",
+                            headerBackVisible: false,
+                        }}
+                    />
 
-                <Stack.Screen
-                    name="orders/[id]"
-                    options={{ title: "Order Details" }}
-                />
+                    <Stack.Screen
+                        name="orders"
+                        options={{ title: "Your Orders" }}
+                    />
 
-            </Stack>
-        </QueryClientProvider>
+                    <Stack.Screen
+                        name="orders/[id]"
+                        options={{ title: "Order Details" }}
+                    />
+
+                </Stack>
+            </QueryClientProvider>
+            
+        </StripeProvider>
     );
 }

@@ -12,7 +12,10 @@ import {
 export default function OrderSuccessScreen() {
     const router = useRouter();
 
-    const { orderId } = useLocalSearchParams<{ orderId: string; }>();
+    const { orderId, paymentMethod } = useLocalSearchParams<{
+        orderId: string;
+        paymentMethod: "cash" | "card";
+    }>();
 
     return (
         <View className="flex-1 items-center justify-center bg-white px-6">
@@ -21,7 +24,9 @@ export default function OrderSuccessScreen() {
             </Text>
 
             <Text className="mt-3 text-center text-gray-500">
-                Your order has been received and is being processed.
+                {paymentMethod === "card"
+                    ? "Your payment was submitted successfully. Your order is being confirmed."
+                    : "Your order has been received and is being processed."}
             </Text>
 
             {orderId && (
