@@ -1,4 +1,4 @@
-import { User, DeliveryAddresses, MenuItem, OrderItems, Orders, sequelize } from "../models/index.js";
+import { User, DeliveryAddresses, MenuItem, OrderItems, Orders, Payments, sequelize } from "../models/index.js";
 
 import Sequelize from "sequelize";
 
@@ -157,7 +157,12 @@ export const getOrdersByUserId = async (req, res) => {
                     model: DeliveryAddresses,
                     as: 'deliveryAddress',
                     attributes: { exclude: ['isGuest', 'guestName', 'userId', 'createdAt', 'updatedAt'] }
-                }
+                },
+                {
+                    model: Payments,
+                    as: "payment",
+                    attributes: ["status", "provider", "amount", "currency"],
+                },
             ],
             order: [['createdAt', 'DESC']]
         });
@@ -198,7 +203,12 @@ export const getOrderById = async (req, res) => {
                         as: 'menuItem',
                         attributes: ['name']
                     }
-                }
+                },
+                {
+                    model: Payments,
+                    as: "payment",
+                    attributes: ["status", "provider", "amount", "currency"],
+                },
             ]
         });
 
