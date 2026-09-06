@@ -9,6 +9,7 @@ import RestaurantSettings from "./RestaurantSettings.js";
 import Orders from "./Orders.js";
 import OrderItems from "./OrderItems.js";
 import Reviews from "./Reviews.js";
+import Payments from "./Payments.js";
 
 DeliveryAddresses.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 User.hasMany(DeliveryAddresses, { foreignKey: 'userId', as: 'addresses' });
@@ -24,6 +25,9 @@ User.hasMany(Orders, { foreignKey: 'userId', as: 'orders' });
 
 Orders.belongsTo(DeliveryAddresses, { foreignKey: 'deliveryAddressId', as: 'deliveryAddress' });
 DeliveryAddresses.hasMany(Orders, { foreignKey: 'deliveryAddressId', as: 'orders' });
+
+Orders.hasOne(Payments, { foreignKey: 'orderId', as: 'payment' });
+Payments.belongsTo(Orders, { foreignKey: 'orderId', as: 'order' });
 
 OrderItems.belongsTo(Orders, { foreignKey: 'orderId', as: 'order' });
 Orders.hasMany(OrderItems, { foreignKey: 'orderId', as: 'items' });
@@ -46,6 +50,7 @@ export {
     Cart,
     Orders,
     OrderItems,
+    Payments,
     RestaurantSettings,
     Reviews
 };

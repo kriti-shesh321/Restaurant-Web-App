@@ -5,6 +5,7 @@ import {
   createOrder,
   getOrdersByUserId,
   getOrderById,
+  updateOrderStatus,
 } from "../controllers/OrderControllers.js";
 
 const router = Router();
@@ -12,5 +13,6 @@ const router = Router();
 router.post("/", optionalAuth, createOrder);
 router.get("/:id", authenticate, getOrderById);
 router.get("/", authenticate, getOrdersByUserId);
+router.patch("/:id/status", authenticate, updateOrderStatus);
 
 export default router;

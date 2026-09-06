@@ -12,8 +12,10 @@ import reviewRoutes from "./routes/reviewRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import restaurantSettingsRoutes from "./routes/restaurantSettingsRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
+import { handleStripeWebhook } from "./controllers/PaymentControllers.js";
 
-dotenv.config({path: "./.env"});
+dotenv.config({ path: "./.env" });
 
 const PORT = process.env.PORT;
 
@@ -23,6 +25,14 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 app.use(cors());
+
+// Stripe webhook MUST receive the raw body.
+app.post(
+    '/api/v1/payment/webhook',
+    express.raw({ type: 'application/json' }),
+    handleStripeWebhook
+);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -35,17 +45,18 @@ app.use('/api/v1/menu', menuRoutes);
 app.use('/api/v1/reviews', reviewRoutes);
 app.use('/api/v1/cart', cartRoutes);
 app.use('/api/v1/order', orderRoutes);
+app.use('/api/v1/payment', paymentRoutes);
 app.use('/api/v1/restaurant', restaurantSettingsRoutes);
 
 const start = async () => {
-  try {
-      //connect to DB
-      await sequelize.authenticate();
-      // await sequelize.sync();
-      app.listen(PORT, () => console.log(`App listening on port ${PORT}`));
-  } catch (error) {
-      console.log(error);
-  }
+    try {
+        //connect to DB
+        await sequelize.authenticate();
+        // await sequelize.sync();
+        app.listen(PORT, () => console.log(`App listening on port ${PORT}`));
+    } catch (error) {
+        console.log(error);
+    }
 };
 
 start();
