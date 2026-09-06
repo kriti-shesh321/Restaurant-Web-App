@@ -153,10 +153,14 @@ export default function CheckoutScreen() {
 
                 orderId = result.order.id;
 
-                setPendingPaymentOrderId(orderId && orderId);
+                setPendingPaymentOrderId(orderId);
             }
 
             if (paymentMethod === "card") {
+                if (orderId === null) {
+                    throw new Error("Order ID is missing");
+                }
+                
                 const payment = await createPaymentIntent(orderId);
 
                 const { error: initError } = await initPaymentSheet({
@@ -441,15 +445,37 @@ export default function CheckoutScreen() {
             {orderType === "dine-in" && (
                 <View className="mt-6">
                     <Text className="text-lg font-bold">
-                        Table number
+                        Table
                     </Text>
 
-                    <TextInput
-                        className="mt-3 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3"
-                        placeholder="Enter table number"
-                        value={tableNumber}
-                        onChangeText={setTableNumber}
-                    />
+                    <View className="mt-3 flex-row flex-wrap gap-3">
+                        {Array.from(
+                            { length: 10 },
+                            (_, index) => String(index + 1)
+                        ).map((table) => (
+                            <Pressable
+                                key={table}
+                                className={
+                                    tableNumber === table
+                                        ? "w-[30%] rounded-xl bg-red-800 p-4"
+                                        : "w-[30%] rounded-xl border border-gray-200 bg-gray-50 p-4"
+                                }
+                                onPress={() =>
+                                    setTableNumber(table)
+                                }
+                            >
+                                <Text
+                                    className={
+                                        tableNumber === table
+                                            ? "text-center font-semibold text-white"
+                                            : "text-center font-semibold text-gray-700"
+                                    }
+                                >
+                                    Table {table}
+                                </Text>
+                            </Pressable>
+                        ))}
+                    </View>
                 </View>
             )}
 
