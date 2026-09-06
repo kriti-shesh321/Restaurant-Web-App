@@ -27,6 +27,7 @@ export interface CreateOrderPayload {
     deliveryAddressId?: number;
     tableNumber?: string;
     items: CreateOrderItem[];
+    paymentMethod: "cash" | "card";
 }
 
 export interface OrderPayment {

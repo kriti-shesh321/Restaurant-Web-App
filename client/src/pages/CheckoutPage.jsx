@@ -59,7 +59,10 @@ const CheckoutPage = () => {
           addressId = newAddress.id;
         }
 
-        await createOrder({ deliveryAddressId: addressId });
+        await createOrder({
+          deliveryAddressId: addressId,
+          paymentMethod: "cash",
+        });
       }
       else {
         const guestAddress = await addDeliveryAddress({ ...formData, userId: null });
@@ -67,8 +70,12 @@ const CheckoutPage = () => {
 
         await createOrder({
           deliveryAddressId: addressId,
-          items: cart?.cartItems,
+          items: cart?.cartItems.map((item) => ({
+            menuItemId: item.id,
+            quantity: item.quantity,
+          })),
           totalAmount: cart?.total,
+          paymentMethod: "cash",
         });
       }
 

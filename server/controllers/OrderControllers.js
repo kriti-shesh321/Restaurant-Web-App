@@ -1,4 +1,4 @@
-import { User, DeliveryAddresses, MenuItem, OrderItems, Orders, Payments, sequelize } from "../models/index.js";
+import { User, DeliveryAddresses, MenuItem, OrderItems, Orders, Payments, Cart, sequelize } from "../models/index.js";
 
 import Sequelize from "sequelize";
 
@@ -16,74 +16,165 @@ export const createOrder = async (req, res, next) => {
             deliveryAddressId,
             tableNumber,
             items,
+            paymentMethod = "cash",
         } = req.body;
+
+        // Validate payment method
+
+        if (!["cash", "card"].includes(paymentMethod)) {
+            await transaction.rollback();
+
+            return res.status(400).json({
+                message: "Invalid payment method.",
+            });
+        }
 
         // Validate order type
 
         if (!["delivery", "dine-in"].includes(orderType)) {
-            return res.status(400).json({ message: "Invalid order type.", });
+            await transaction.rollback();
+
+            return res.status(400).json({
+                message: "Invalid order type.",
+            });
         }
 
         // Validate delivery / dine-in context
 
         if (orderType === "delivery") {
             if (!deliveryAddressId) {
-                return res.status(400).json({ message: "Delivery address is required.", });
+                await transaction.rollback();
+
+                return res.status(400).json({
+                    message: "Delivery address is required.",
+                });
             }
 
             const validAddress = await DeliveryAddresses.findOne({
-                where: { id: deliveryAddressId, ...(userId ? { userId } : {}) },
+                where: {
+                    id: deliveryAddressId,
+                    ...(userId ? { userId } : {}),
+                },
+                transaction,
             });
 
             if (!validAddress) {
-                return res.status(404).json({ message: "Delivery address not found.", });
+                await transaction.rollback();
+
+                return res.status(404).json({
+                    message: "Delivery address not found.",
+                });
             }
         }
 
         if (orderType === "dine-in") {
             if (!tableNumber) {
-                return res.status(400).json({ message: "Table number is required for dine-in orders.", });
+                await transaction.rollback();
+
+                return res.status(400).json({
+                    message: "Table number is required for dine-in orders.",
+                });
             }
         }
 
-        // Validate cart items
+        // Determine where the order items come from.
 
-        if (!Array.isArray(items) || items.length === 0) {
-            return res.status(400).json({ message: "Order must contain at least one item." });
+        // Mobile sends items from its Zustand cart.
+        // Existing web authenticated checkout may not send items, so fall back to the user's server-side cart.
+
+        let orderInputItems = items;
+
+        if (!Array.isArray(orderInputItems) || orderInputItems.length === 0) {
+            if (!userId) {
+                await transaction.rollback();
+
+                return res.status(400).json({
+                    message: "Order must contain at least one item.",
+                });
+            }
+
+            const cartItems = await Cart.findAll({
+                where: {
+                    userId,
+                },
+                include: [
+                    {
+                        model: MenuItem,
+                        as: "menuItem",
+                        attributes: ["id", "name", "price", "availability"],
+                    },
+                ],
+                transaction,
+            });
+
+            if (!cartItems.length) {
+                await transaction.rollback();
+
+                return res.status(400).json({
+                    message: "Your cart is empty.",
+                });
+            }
+
+            orderInputItems = cartItems.map((cartItem) => ({
+                menuItemId: cartItem.menuItem.id,
+                quantity: cartItem.quantity,
+            }));
         }
 
         // Fetch real menu items from DB
 
-        const menuItemIds = items.map(item => item.menuItemId);
+        const menuItemIds = orderInputItems.map(
+            (item) => item.menuItemId
+        );
 
         const menuItems = await MenuItem.findAll({
-            where: { id: menuItemIds, },
-            attributes: ["id", "name", "price", "availability"],
+            where: {
+                id: menuItemIds,
+            },
+            attributes: [
+                "id",
+                "name",
+                "price",
+                "availability",
+            ],
+            transaction,
         });
 
-        if (menuItems.length !== items.length) {
-            return res.status(400).json({ message: "One or more menu items are invalid." });
+        if (menuItems.length !== orderInputItems.length) {
+            await transaction.rollback();
+
+            return res.status(400).json({
+                message: "One or more menu items are invalid.",
+            });
         }
 
         const menuItemMap = new Map(
-            menuItems.map(item => [item.id, item])
+            menuItems.map((item) => [item.id, item])
         );
 
         // Build order items using server prices
 
         const orderItems = [];
 
-        for (const item of items) {
+        for (const item of orderInputItems) {
             const menuItem = menuItemMap.get(item.menuItemId);
 
             const quantity = Number(item.quantity);
 
             if (!Number.isInteger(quantity) || quantity <= 0) {
-                return res.status(400).json({ message: "Invalid item quantity." });
+                await transaction.rollback();
+
+                return res.status(400).json({
+                    message: "Invalid item quantity.",
+                });
             }
 
             if (menuItem.availability !== "online" && menuItem.availability !== "both") {
-                return res.status(400).json({ message: `${menuItem.name} is not currently available online.`, });
+                await transaction.rollback();
+
+                return res.status(400).json({
+                    message: `${menuItem.name} is not currently available online.`,
+                });
             }
 
             orderItems.push({
@@ -93,9 +184,21 @@ export const createOrder = async (req, res, next) => {
             });
         }
 
-        // Calculate total on the server
+        // Calculate total
 
-        const total = orderItems.reduce((sum, item) => sum + item.quantity * item.price, 0);
+        const total = orderItems.reduce(
+            (sum, item) =>
+                sum + item.quantity * item.price,
+            0
+        );
+
+        // Cash orders can be confirmed immediately.
+        // Card orders remain pending until Stripe confirms payment.
+
+        const initialStatus =
+            paymentMethod === "cash"
+                ? "Confirmed"
+                : "Pending";
 
         // Create order
 
@@ -104,22 +207,41 @@ export const createOrder = async (req, res, next) => {
                 isGuest,
                 userId,
                 orderType,
-                deliveryAddressId: orderType === "delivery" ? deliveryAddressId : null,
-                tableNumber: orderType === "dine-in" ? tableNumber : null,
+                deliveryAddressId:
+                    orderType === "delivery"
+                        ? deliveryAddressId
+                        : null,
+                tableNumber:
+                    orderType === "dine-in"
+                        ? tableNumber
+                        : null,
                 totalAmount: total.toFixed(2),
-                status: "Pending",
+                status: initialStatus,
             },
             { transaction }
         );
 
         // Create order items
 
-        const orderItemsData = orderItems.map(item => ({
+        const orderItemsData = orderItems.map((item) => ({
             orderId: order.id,
             ...item,
         }));
 
-        await OrderItems.bulkCreate(orderItemsData, { transaction });
+        await OrderItems.bulkCreate(
+            orderItemsData,
+            { transaction }
+        );
+
+        // Clear the existing server cart when it was used.
+        // Mobile uses a client-side Zustand cart, so it does not depend on this.
+
+        if (userId && (!Array.isArray(items) || items.length === 0)) {
+            await Cart.destroy({
+                where: { userId },
+                transaction,
+            });
+        }
 
         await transaction.commit();
 
@@ -129,9 +251,11 @@ export const createOrder = async (req, res, next) => {
         });
 
     } catch (error) {
+        await transaction.rollback();
+
         console.error("Error placing order:", error);
 
-        return res.status(500).json({ message: "Server error", });
+        return res.status(500).json({ message: "Server error" });
     }
 };
 

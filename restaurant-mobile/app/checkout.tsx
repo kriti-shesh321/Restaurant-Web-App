@@ -136,6 +136,8 @@ export default function CheckoutScreen() {
                 menuItemId: item.menuItem.id,
                 quantity: item.quantity,
             })),
+
+            paymentMethod,
         };
 
         try {
