@@ -5,8 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "node --watch index",
-    "start": "node index",
-    "build": "node build"
+    "start": "node index"
   },
   "author": "",
   "license": "ISC",

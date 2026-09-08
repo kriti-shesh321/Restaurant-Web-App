@@ -76,7 +76,8 @@ This project demonstrates architectural thinking around **multi-client backend d
 - **Secure Storage:** expo-secure-store (JWT persistence)
 - **HTTP:** Axios
 - **Styling:** NativeWind + StyleSheet
-- **Deployment:** Expo Go / EAS
+- **Development:** Expo Go
+- **Build & Distribution:** EAS
 
 ---
 
@@ -86,10 +87,10 @@ This project demonstrates architectural thinking around **multi-client backend d
 Restaurant-Web-App/
 │
 ├── server/                            # Single Express API
-│   ├── controllers/               # Route handlers (auth, menu, orders, payments)
-│   ├── models/                    # Sequelize models
+│   ├── controllers/                   # Route handlers (auth, menu, orders, payments)
+│   ├── models/                        # Sequelize models
 │   ├── routes/
-│   ├── middleware/                # Auth handling
+│   ├── middleware/                    # Auth handling
 │   ├── config/
 │   ├── migrations/                    # Database schema
 │   ├── index.js
@@ -286,13 +287,24 @@ npx expo start
 # Scan QR code in Expo Go app, or run on physical device
 ```
 
+### Mobile Android Build
+
+EAS is configured for native builds.
+
+```bash
+cd restaurant-mobile
+
+# Build an Android APK
+eas build --platform android --profile preview
+```
+
 ### Deployment
 
 | Component | Platform | Status |
 |-----------|----------|--------|
 | Backend | Railway | ✅ Production |
 | Web | Netlify | ✅ Production |
-| Mobile | Expo Go | Development/testing via Expo Go; native builds can be configured with EAS |
+| Mobile | EAS | Android APK built with EAS and tested on a physical device against the production backend |
 
 ---
 
@@ -331,7 +343,7 @@ npx expo start
    - Dine-in: Pending → Confirmed → Preparing Order → Ready → Served
 ```
 
-### Payment Webhook Testing
+### Payment Webhook Testing with just backend APIs
 ```bash
 # Stripe CLI for local testing
 stripe listen --forward-to localhost:8000/api/v1/payment/webhook
