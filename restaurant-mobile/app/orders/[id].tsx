@@ -12,6 +12,8 @@ import {
     useLocalSearchParams,
 } from "expo-router";
 
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
 import { useAuthStore } from "../../src/stores/authStore";
 import { useOrder } from "../../src/hooks/useOrders";
 
@@ -63,6 +65,8 @@ function getCurrentStepIndex(
 }
 
 export default function OrderDetailScreen() {
+    const insets = useSafeAreaInsets();
+
     const token = useAuthStore(
         (state) => state.token
     );
@@ -134,7 +138,7 @@ export default function OrderDetailScreen() {
                 }}
             />
 
-            {order.payment && (
+            {/* {order.payment && (
                 <View className="mt-4 border-t border-gray-100 pt-4">
                     <Text className="text-sm font-semibold text-gray-500">
                         Payment
@@ -148,11 +152,13 @@ export default function OrderDetailScreen() {
                         {order.payment.status}
                     </Text>
                 </View>
-            )}
+            )} */}
 
             <ScrollView
                 className="flex-1 bg-gray-50"
-                contentContainerClassName="px-5 pb-10 pt-5"
+                contentContainerStyle={{
+                    paddingBottom: insets.bottom + 32,
+                }}
                 refreshControl={
                     <RefreshControl
                         refreshing={isRefetching}
@@ -185,6 +191,22 @@ export default function OrderDetailScreen() {
                         <Text className="mt-4 text-sm text-gray-500">
                             Status updates automatically every 5 seconds.
                         </Text>
+                    )}
+
+                    {order.payment && (
+                        <View className="mt-4 border-t border-gray-100 pt-4">
+                            <Text className="text-sm font-semibold text-gray-500">
+                                Payment
+                            </Text>
+
+                            <Text className="mt-1 font-semibold text-gray-800">
+                                {order.payment.provider === "stripe"
+                                    ? "Card"
+                                    : order.payment.provider}
+                                {" · "}
+                                {order.payment.status.charAt(0).toUpperCase() + order.payment.status.slice(1)}
+                            </Text>
+                        </View>
                     )}
                 </View>
 

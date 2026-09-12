@@ -5,6 +5,8 @@ import {
     View,
 } from "react-native";
 
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
 import { Redirect, useRouter } from "expo-router";
 
 import { useAuthStore } from "../../src/stores/authStore";
@@ -25,6 +27,7 @@ function formatOrderDate(dateString: string) {
 
 export default function OrdersScreen() {
     const router = useRouter();
+    const insets = useSafeAreaInsets();
 
     const token = useAuthStore(
         (state) => state.token
@@ -76,7 +79,12 @@ export default function OrdersScreen() {
             <FlatList
                 data={orders}
                 keyExtractor={(item) => String(item.id)}
-                contentContainerClassName="gap-4 px-5 pb-8 pt-5"
+                contentContainerStyle={{
+                    gap: 16,
+                    paddingHorizontal: 20,
+                    paddingTop: 20,
+                    paddingBottom: insets.bottom + 32,
+                }}
                 refreshing={isRefetching}
                 onRefresh={refetch}
                 ListHeaderComponent={
@@ -177,13 +185,13 @@ function OrderCard({
                         Total
                     </Text>
 
-                    <Text className="mt-1 text-base font-bold text-red-800">
+                    <Text className="mt-1 text-base font-bold text-green-800">
                         ${Number(order.totalAmount).toFixed(2)}
                     </Text>
                 </View>
             </View>
 
-            <Text className="mt-4 text-center text-sm font-semibold text-red-800">
+            <Text className="mt-5 ttext-sm font-semibold text-red-800">
                 View Order →
             </Text>
         </Pressable>

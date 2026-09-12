@@ -6,6 +6,8 @@ import {
     View,
 } from "react-native";
 
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
 import axios from "axios";
 
 import { useState, } from "react";
@@ -23,6 +25,8 @@ import { PaymentSheetError, useStripe } from "@stripe/stripe-react-native";
 import { createPaymentIntent } from "../src/api/payments";
 
 export default function CheckoutScreen() {
+    const insets = useSafeAreaInsets();
+
     const router = useRouter();
 
     const items = useCartStore(
@@ -160,7 +164,7 @@ export default function CheckoutScreen() {
                 if (orderId === null) {
                     throw new Error("Order ID is missing");
                 }
-                
+
                 const payment = await createPaymentIntent(orderId);
 
                 const { error: initError } = await initPaymentSheet({
@@ -219,7 +223,10 @@ export default function CheckoutScreen() {
     return (
         <ScrollView
             className="flex-1 bg-white"
-            contentContainerClassName="px-5 pb-10 pt-5"
+            contentContainerStyle={{
+                paddingBottom: insets.bottom + 32,
+            }}
+            contentContainerClassName="px-5 pt-5"
         >
             <Text className="text-2xl font-bold text-gray-900">
                 Checkout

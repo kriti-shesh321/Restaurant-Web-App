@@ -7,6 +7,7 @@ import {
 } from "react-native";
 
 import { useMemo } from "react";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 
 import { useCartStore } from "../src/stores/cartStore";
@@ -25,6 +26,7 @@ const getDishImage = (dishId: number) => {
 
 export default function CartScreen() {
     const router = useRouter();
+    const insets = useSafeAreaInsets();
 
     const items = useCartStore(
         (state) => state.items
@@ -149,7 +151,10 @@ export default function CartScreen() {
                 )}
             />
 
-            <View className="border-t border-gray-200 bg-white px-5 pb-8 pt-4">
+            <View
+                className="border-t border-gray-200 bg-white px-5 pb-8 pt-4"
+                style={{ paddingBottom: insets.bottom + 16 }}
+            >
                 <View className="flex-row justify-between">
                     <Text className="text-lg text-gray-600">
                         Subtotal

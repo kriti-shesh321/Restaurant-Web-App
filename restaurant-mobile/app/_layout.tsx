@@ -6,6 +6,8 @@ import {
 } from "@tanstack/react-query";
 
 import { Stack } from "expo-router";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+
 import { useEffect } from "react";
 import { useAuthStore } from "../src/stores/authStore";
 
@@ -33,56 +35,60 @@ export default function RootLayout() {
     }
 
     return (
-        <StripeProvider publishableKey={stripePublishableKey ?? ""}>
+        <SafeAreaProvider>
 
-            <QueryClientProvider client={queryClient}>
-                <Stack>
-                    <Stack.Screen
-                        name="index"
-                        options={{ headerShown: false }}
-                    />
+            <StripeProvider publishableKey={stripePublishableKey ?? ""}>
 
-                    <Stack.Screen
-                        name="login"
-                        options={{ title: "Login" }}
-                    />
+                <QueryClientProvider client={queryClient}>
+                    <Stack>
+                        <Stack.Screen
+                            name="index"
+                            options={{ headerShown: false }}
+                        />
 
-                    <Stack.Screen
-                        name="signup"
-                        options={{ title: "Sign Up" }}
-                    />
+                        <Stack.Screen
+                            name="login"
+                            options={{ title: "Login" }}
+                        />
 
-                    <Stack.Screen
-                        name="cart"
-                        options={{ title: "Your Cart" }}
-                    />
+                        <Stack.Screen
+                            name="signup"
+                            options={{ title: "Sign Up" }}
+                        />
 
-                    <Stack.Screen
-                        name="checkout"
-                        options={{ title: "Checkout" }}
-                    />
+                        <Stack.Screen
+                            name="cart"
+                            options={{ title: "Your Cart" }}
+                        />
 
-                    <Stack.Screen
-                        name="order-success"
-                        options={{
-                            title: "Order Confirmed",
-                            headerBackVisible: false,
-                        }}
-                    />
+                        <Stack.Screen
+                            name="checkout"
+                            options={{ title: "Checkout" }}
+                        />
 
-                    <Stack.Screen
-                        name="orders"
-                        options={{ title: "Your Orders" }}
-                    />
+                        <Stack.Screen
+                            name="order-success"
+                            options={{
+                                title: "Order Confirmed",
+                                headerBackVisible: false,
+                            }}
+                        />
 
-                    <Stack.Screen
-                        name="orders/[id]"
-                        options={{ title: "Order Details" }}
-                    />
+                        <Stack.Screen
+                            name="orders/index"
+                            options={{ title: "Your Orders" }}
+                        />
 
-                </Stack>
-            </QueryClientProvider>
-            
-        </StripeProvider>
+                        <Stack.Screen
+                            name="orders/[id]"
+                            options={{ title: "Order Details" }}
+                        />
+
+                    </Stack>
+                </QueryClientProvider>
+
+            </StripeProvider>
+
+        </SafeAreaProvider>
     );
 }

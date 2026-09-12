@@ -7,6 +7,8 @@ import {
     View,
 } from "react-native";
 
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
 import { useMemo, useState } from "react";
 import { Redirect, useRouter } from "expo-router";
 
@@ -34,6 +36,7 @@ const getDishImage = (dishId: number) => {
 };
 
 export default function HomeScreen() {
+    const insets = useSafeAreaInsets();
     const router = useRouter();
 
     const token = useAuthStore(
@@ -134,20 +137,30 @@ export default function HomeScreen() {
     return (
         <View className="flex-1 bg-white">
             <View className="px-5 pb-3 pt-14">
-                <View className="flex-row items-center justify-between">
-                    <View>
-                        <Text className="text-3xl font-bold text-gray-900">
-                            Our Menu
-                        </Text>
+                <View>
+                    <View className="flex-row items-center justify-between">
+                        <View>
+                            <Text className="text-3xl font-bold text-gray-900">
+                                Our Menu
+                            </Text>
 
-                        <Text className="mt-1 text-gray-500">
-                            Fresh food, ready to order
-                        </Text>
+                            <Text className="mt-1 text-gray-500">
+                                Fresh food, ready to order
+                            </Text>
+                        </View>
+                        <Pressable
+                            className="items-center rounded-md bg-gray-100 px-3 py-2"
+                            onPress={handleLogout}
+                        >
+                            <Text className="font-semibold text-gray-700">
+                                Logout
+                            </Text>
+                        </Pressable>
                     </View>
 
-                    <View className="flex-row items-center gap-2">
+                    <View className="mt-4 flex-row gap-2">
                         <Pressable
-                            className="rounded-lg bg-red-800 px-4 py-2"
+                            className="flex-1 items-center rounded-lg border bg-red-800 px-3 py-2"
                             onPress={() => router.push("/cart")}
                         >
                             <Text className="font-semibold text-white">
@@ -156,20 +169,11 @@ export default function HomeScreen() {
                         </Pressable>
 
                         <Pressable
-                            className="rounded-lg bg-gray-100 px-3 py-2"
+                            className="flex-1 items-center rounded-lg bg-gray-100 border border-red-800 px-3 py-2"
                             onPress={() => router.push("/orders")}
                         >
                             <Text className="font-semibold text-gray-700">
                                 Orders
-                            </Text>
-                        </Pressable>
-
-                        <Pressable
-                            className="rounded-lg bg-gray-100 px-3 py-2"
-                            onPress={handleLogout}
-                        >
-                            <Text className="font-semibold text-gray-700">
-                                Logout
                             </Text>
                         </Pressable>
                     </View>
@@ -222,7 +226,11 @@ export default function HomeScreen() {
             <FlatList
                 data={filteredMenu}
                 keyExtractor={(item) => String(item.id)}
-                contentContainerClassName="gap-4 px-5 pb-8"
+                contentContainerStyle={{
+                    gap: 16,
+                    paddingHorizontal: 20,
+                    paddingBottom: insets.bottom + 32,
+                }}
                 refreshing={isRefetching}
                 onRefresh={refetchMenu}
                 ListEmptyComponent={
